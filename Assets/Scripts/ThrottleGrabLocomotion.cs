@@ -24,10 +24,16 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     public float deadZoneAngle = 5f;     // Zona muerta para no vibrar
     public ThrottleAxis throttleAxis = ThrottleAxis.Roll;
     public bool invertAxis;
-    public bool useAbsoluteTilt = true;
+    public float accelerationRate = 6f;   // m/s por segundo al acelerar
+    public float brakeRate = 10f;         // m/s por segundo al frenar girando hacia atrás
+    public float naturalDrag = 2f;        // m/s por segundo cuando no hay input
 
     [Header("Debug")]
     public bool showDebug = true;
+    [SerializeField] private float lastAngle;
+    [SerializeField] private float lastForwardInput;
+    [SerializeField] private float lastBrakeInput;
+    [SerializeField] private float currentSpeed;
 
     private XRGrabInteractable grab;
     private Rigidbody rb;
@@ -115,18 +121,46 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         if (invertAxis)
             axisAngle = -axisAngle;
 
-        float throttleAngle = useAbsoluteTilt ? Mathf.Abs(axisAngle) : axisAngle;
-        throttleAngle = Mathf.Max(0f, throttleAngle - deadZoneAngle);
-        float throttle01 = Mathf.InverseLerp(0f, maxThrottleAngle, throttleAngle);
-        throttle01 = Mathf.Clamp01(throttle01);
+        float throttleForward = 0f;
+        float brakeInput = 0f;
+        float forwardAngle = Mathf.Max(0f, -axisAngle);
+        float backwardAngle = Mathf.Max(0f, axisAngle);
+
+        if (forwardAngle > deadZoneAngle)
+        {
+            throttleForward = Mathf.InverseLerp(deadZoneAngle, maxThrottleAngle, Mathf.Min(maxThrottleAngle, forwardAngle));
+        }
+
+        if (backwardAngle > deadZoneAngle)
+        {
+            brakeInput = Mathf.InverseLerp(deadZoneAngle, maxThrottleAngle, Mathf.Min(maxThrottleAngle, backwardAngle));
+        }
 
         if (showDebug)
         {
-            Debug.Log($"[Throttle] Axis({throttleAxis}): {axisAngle:F1}  Throttle01: {throttle01:F2}");
+            Debug.Log($"[Throttle] Axis({throttleAxis}): {axisAngle:F1}  Forward: {throttleForward:F2}  Brake: {brakeInput:F2}");
         }
 
-        // Si no hay casi gas, no nos movemos
-        if (throttle01 <= 0.01f)
+        lastAngle = axisAngle;
+        lastForwardInput = throttleForward;
+        lastBrakeInput = brakeInput;
+
+        // Actualizar velocidad actual
+        if (throttleForward > 0f)
+        {
+            float target = maxSpeed * throttleForward;
+            currentSpeed = Mathf.MoveTowards(currentSpeed, target, accelerationRate * Time.deltaTime);
+        }
+        else if (brakeInput > 0f)
+        {
+            currentSpeed = Mathf.MoveTowards(currentSpeed, 0f, brakeRate * brakeInput * Time.deltaTime);
+        }
+        else
+        {
+            currentSpeed = Mathf.MoveTowards(currentSpeed, 0f, naturalDrag * Time.deltaTime);
+        }
+
+        if (currentSpeed <= 0.01f)
             return;
 
         // 2. Dirección = hacia donde mira la cabeza (solo en plano XZ)
@@ -137,8 +171,7 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         forward.Normalize();
 
         // 3. Aplicar movimiento al XR Origin
-        float speed = maxSpeed * throttle01;
-        Vector3 motion = forward * speed * Time.deltaTime;
+        Vector3 motion = forward * currentSpeed * Time.deltaTime;
 
         xrOrigin.position += motion;
     }

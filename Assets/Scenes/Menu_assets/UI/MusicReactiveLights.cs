@@ -6,7 +6,7 @@ public class MusicReactiveLights : MonoBehaviour
     public float sensitivity = 5f;       // Escala la intensidad del bajo
     public float threshold = 0.1f;       // Umbral para encender la luz
     public int bassSamples = 16;         // Número de muestras bajas
-    public Color baseColor = Color.cyan;
+    public Color baseColor;
     public Light[] ledLights;            // Luces a lo largo del LED
     public float maxIntensity = 5f;      // Intensidad máxima de las luces
 

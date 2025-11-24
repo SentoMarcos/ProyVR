@@ -1,66 +1,93 @@
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.UI;
 
 public class VolumeManager : MonoBehaviour
 {
     [Header("Audio Mixer Reference")]
     public AudioMixer masterMixer;
 
-    // Estos nombres deben coincidir con los parámetros expuestos en el Audio Mixer
+    [Header("UI Sliders")]
+    public Slider masterSlider;
+    public Slider musicSlider;
+    public Slider sfxSlider;
+
     private const string MASTER = "MasterVolume";
     private const string MUSIC = "MusicVolume";
     private const string SFX = "SFXVolume";
 
-    /// <summary>
-    /// Ajusta el volumen del master
-    /// </summary>
-    /// <param name="value">Valor de 0 a 1 (slider)</param>
-    public void SetMasterVolume(float value)
+    private float musicBase = 1f;
+    private float sfxBase = 1f;
+
+    void Start()
     {
-        // Convertir a decibeles logarítmicamente
-        masterMixer.SetFloat(MASTER, Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20);
+        // Asignar callbacks
+        masterSlider.onValueChanged.AddListener(SetMasterVolume);
+        musicSlider.onValueChanged.AddListener(SetMusicVolume);
+        sfxSlider.onValueChanged.AddListener(SetSFXVolume);
+
+        LoadVolumePrefs();
     }
 
-    /// <summary>
-    /// Ajusta el volumen de la música
-    /// </summary>
+    public void SetMasterVolume(float value)
+    {
+        masterMixer.SetFloat(MASTER, Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20);
+
+        // Aplicar master a Music y SFX
+        ApplyMusicVolume(value * musicBase);
+        ApplySFXVolume(value * sfxBase);
+
+        // Actualizar sliders visualmente
+        musicSlider.SetValueWithoutNotify(value * musicBase);
+        sfxSlider.SetValueWithoutNotify(value * sfxBase);
+    }
+
     public void SetMusicVolume(float value)
+    {
+        musicBase = value;
+
+        float masterValue = masterSlider.value;
+        ApplyMusicVolume(masterValue * musicBase);
+    }
+
+    public void SetSFXVolume(float value)
+    {
+        sfxBase = value;
+
+        float masterValue = masterSlider.value;
+        ApplySFXVolume(masterValue * sfxBase);
+    }
+
+    private void ApplyMusicVolume(float value)
     {
         masterMixer.SetFloat(MUSIC, Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20);
     }
 
-    /// <summary>
-    /// Ajusta el volumen de los efectos
-    /// </summary>
-    public void SetSFXVolume(float value)
+    private void ApplySFXVolume(float value)
     {
         masterMixer.SetFloat(SFX, Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20);
     }
 
-    /// <summary>
-    /// Cargar valores guardados (opcional)
-    /// </summary>
     public void LoadVolumePrefs()
     {
-        SetMasterVolume(PlayerPrefs.GetFloat(MASTER, 1f));
-        SetMusicVolume(PlayerPrefs.GetFloat(MUSIC, 1f));
-        SetSFXVolume(PlayerPrefs.GetFloat(SFX, 1f));
+        float master = PlayerPrefs.GetFloat(MASTER, 1f);
+        musicBase = PlayerPrefs.GetFloat(MUSIC, 1f);
+        sfxBase = PlayerPrefs.GetFloat(SFX, 1f);
+
+        // Ajustar sliders
+        masterSlider.value = master;
+        musicSlider.value = master * musicBase;
+        sfxSlider.value = master * sfxBase;
+
+        // Aplicar volúmenes
+        SetMasterVolume(master);
     }
 
-    /// <summary>
-    /// Guardar valores actuales (opcional)
-    /// </summary>
     public void SaveVolumePrefs()
     {
-        float master, music, sfx;
-        masterMixer.GetFloat(MASTER, out master);
-        masterMixer.GetFloat(MUSIC, out music);
-        masterMixer.GetFloat(SFX, out sfx);
-
-        // Convertir de dB a valor 0-1
-        PlayerPrefs.SetFloat(MASTER, Mathf.Pow(10, master / 20f));
-        PlayerPrefs.SetFloat(MUSIC, Mathf.Pow(10, music / 20f));
-        PlayerPrefs.SetFloat(SFX, Mathf.Pow(10, sfx / 20f));
+        PlayerPrefs.SetFloat(MASTER, masterSlider.value);
+        PlayerPrefs.SetFloat(MUSIC, musicBase);
+        PlayerPrefs.SetFloat(SFX, sfxBase);
         PlayerPrefs.Save();
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
@@ -18,6 +19,8 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     public Transform headTransform; // Main Camera (cabeza)
     public Transform bodyParent;    // Camera Offset o Main Camera (donde se pega el cubo)
     public Transform mountPoint;    // Punto sobre la moto donde se debe colocar el XR Origin
+    [Header("Acciones de entrada")]
+    public InputActionProperty brakeTriggerAction; // Gatillo trasero mano izquierda
 
     [Header("Movimiento tipo moto")]
     public float maxSpeed = 3f;        // Velocidad máxima (m/s)
@@ -28,6 +31,12 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     public float accelerationRate = 6f;   // m/s por segundo al acelerar
     public float brakeRate = 10f;         // m/s por segundo al frenar girando hacia atrás
     public float naturalDrag = 2f;        // m/s por segundo cuando no hay input
+
+    [Header("Freno con gatillo")]
+    public float triggerBrakeStrength = 20f; // m/s por segundo aplicados por el gatillo
+    public float triggerBrakeSmoothing = 4f;  // Qué tan rápido sigue la presión real
+    public float triggerBrakeExponent = 2f;   // >1 reduce sensibilidad al inicio
+    public AnimationCurve triggerBrakeCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
     [Header("Giro por inclinación de cabeza")]
     public float leanSensitivity = 40f;   // Grados para giro máximo
     public float maxTurnSpeed = 60f;      // Grados por segundo al inclinarse
@@ -38,7 +47,9 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     [SerializeField] private float lastAngle;
     [SerializeField] private float lastForwardInput;
     [SerializeField] private float lastBrakeInput;
+    [SerializeField] private float lastTriggerBrake;
     [SerializeField] private float currentSpeed;
+    private float triggerBrakeFiltered;
 
     private XRGrabInteractable grab;
     private Rigidbody rb;
@@ -58,6 +69,24 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
 
         grab.selectEntered.AddListener(OnGrab);
         grab.selectExited.AddListener(OnRelease);
+    }
+
+    void OnEnable()
+    {
+        var action = brakeTriggerAction.action;
+        if (action != null && action.enabled == false)
+        {
+            action.Enable();
+        }
+    }
+
+    void OnDisable()
+    {
+        var action = brakeTriggerAction.action;
+        if (action != null && action.enabled)
+        {
+            action.Disable();
+        }
     }
 
     void OnDestroy()
@@ -173,29 +202,54 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
             brakeInput = Mathf.InverseLerp(deadZoneAngle, maxThrottleAngle, Mathf.Min(maxThrottleAngle, backwardAngle));
         }
 
-        if (showDebug)
+        float triggerBrakeInput = 0f;
+        if (brakeTriggerAction.action != null)
         {
-            Debug.Log($"[Throttle] Axis({throttleAxis}): {axisAngle:F1}  Forward: {throttleForward:F2}  Brake: {brakeInput:F2}");
+            triggerBrakeInput = Mathf.Clamp01(brakeTriggerAction.action.ReadValue<float>());
         }
+
+        float triggerBrakeShaped = triggerBrakeInput;
+        if (triggerBrakeExponent > 0.01f)
+        {
+            triggerBrakeShaped = Mathf.Pow(triggerBrakeInput, triggerBrakeExponent);
+        }
+
+        float triggerBrakeTarget = triggerBrakeCurve != null
+            ? Mathf.Clamp01(triggerBrakeCurve.Evaluate(triggerBrakeShaped))
+            : triggerBrakeShaped;
+
+        triggerBrakeFiltered = Mathf.MoveTowards(
+            triggerBrakeFiltered,
+            triggerBrakeTarget,
+            Time.deltaTime * Mathf.Max(0.01f, triggerBrakeSmoothing));
+
+        float triggerBrakeEffective = triggerBrakeFiltered;
 
         lastAngle = axisAngle;
         lastForwardInput = throttleForward;
         lastBrakeInput = brakeInput;
+        lastTriggerBrake = triggerBrakeEffective;
 
-        // Actualizar velocidad actual
-        if (throttleForward > 0f)
+        // Actualizar velocidad actual combinando aceleración y frenado en la misma ecuación
+        float accelPerSecond = accelerationRate * throttleForward;
+        float brakePerSecond = naturalDrag;
+        if (brakeInput > 0f)
         {
-            float target = maxSpeed * throttleForward;
-            currentSpeed = Mathf.MoveTowards(currentSpeed, target, accelerationRate * Time.deltaTime);
+            brakePerSecond += brakeRate * brakeInput;
         }
-        else if (brakeInput > 0f)
+        if (triggerBrakeEffective > 0f)
         {
-            currentSpeed = Mathf.MoveTowards(currentSpeed, 0f, brakeRate * brakeInput * Time.deltaTime);
+            brakePerSecond += triggerBrakeStrength * triggerBrakeEffective;
         }
-        else
+
+        float netAcceleration = accelPerSecond - brakePerSecond; // positivo acelera, negativo frena
+
+        if (showDebug)
         {
-            currentSpeed = Mathf.MoveTowards(currentSpeed, 0f, naturalDrag * Time.deltaTime);
+            Debug.Log($"[Throttle] Axis({throttleAxis}): {axisAngle:F1}  Forward: {throttleForward:F2}  Brake: {brakeInput:F2}  TriggerRaw: {triggerBrakeInput:F2}  TriggerShaped: {triggerBrakeShaped:F2}  TriggerEval: {triggerBrakeEffective:F2}  NetAcc: {netAcceleration:F2}");
         }
+
+        currentSpeed = Mathf.Clamp(currentSpeed + netAcceleration * Time.deltaTime, 0f, maxSpeed);
 
         if (currentSpeed <= 0.01f)
             return;

@@ -226,8 +226,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1, y: -0.29, z: 1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 31.51, y: 31.51, z: 31.51}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -835,6 +835,18 @@ MonoBehaviour:
   headTransform: {fileID: 926585483}
   bodyParent: {fileID: 551253646}
   mountPoint: {fileID: 1343416226}
+  brakeTriggerAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Brake Trigger
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 244448c3-79e2-4156-85b4-44d4fcfa5753
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -5982496924579745919, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   maxSpeed: 3
   maxThrottleAngle: 45
   deadZoneAngle: 5
@@ -843,10 +855,41 @@ MonoBehaviour:
   accelerationRate: 6
   brakeRate: 10
   naturalDrag: 2
+  triggerBrakeStrength: 20
+  triggerBrakeSmoothing: 4
+  triggerBrakeExponent: 2
+  triggerBrakeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  leanSensitivity: 40
+  maxTurnSpeed: 60
+  leanDeadZone: 5
   showDebug: 1
   lastAngle: 0
   lastForwardInput: 0
   lastBrakeInput: 0
+  lastTriggerBrake: 0
   currentSpeed: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

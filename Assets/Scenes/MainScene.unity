@@ -834,6 +834,7 @@ MonoBehaviour:
   xrOrigin: {fileID: 379891739}
   headTransform: {fileID: 926585483}
   bodyParent: {fileID: 551253646}
+  mountPoint: {fileID: 1343416226}
   maxSpeed: 3
   maxThrottleAngle: 45
   deadZoneAngle: 5

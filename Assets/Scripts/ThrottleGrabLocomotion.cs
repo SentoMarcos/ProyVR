@@ -17,6 +17,7 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     public Transform xrOrigin;      // XR Origin (XR Rig)
     public Transform headTransform; // Main Camera (cabeza)
     public Transform bodyParent;    // Camera Offset o Main Camera (donde se pega el cubo)
+    public Transform mountPoint;    // Punto sobre la moto donde se debe colocar el XR Origin
 
     [Header("Movimiento tipo moto")]
     public float maxSpeed = 3f;        // Velocidad máxima (m/s)
@@ -27,6 +28,10 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     public float accelerationRate = 6f;   // m/s por segundo al acelerar
     public float brakeRate = 10f;         // m/s por segundo al frenar girando hacia atrás
     public float naturalDrag = 2f;        // m/s por segundo cuando no hay input
+    [Header("Giro por inclinación de cabeza")]
+    public float leanSensitivity = 40f;   // Grados para giro máximo
+    public float maxTurnSpeed = 60f;      // Grados por segundo al inclinarse
+    public float leanDeadZone = 5f;
 
     [Header("Debug")]
     public bool showDebug = true;
@@ -38,9 +43,12 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     private XRGrabInteractable grab;
     private Rigidbody rb;
     private Transform originalParent;
+    private Vector3 xrOriginInitialPosition;
+    private Quaternion xrOriginInitialRotation;
     private bool isGrabbed = false;
     private Transform interactorTransform;  // Mano / mando que lo coge
-    private Quaternion startRotation;       // Rotación de referencia al coger
+    private Quaternion startRotation;       // Rotación mundial de referencia al coger
+    private Quaternion startLocalRotation;  // Rotación relativa al XR Origin al coger
 
     void Awake()
     {
@@ -67,8 +75,29 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
             interactorTransform = args.interactorObject.transform;
         }
 
-        // Rotación global al empezar a cogerlo
+        // Guardar posición y rotación iniciales del XR Origin
+        if (xrOrigin != null)
+        {
+            xrOriginInitialPosition = xrOrigin.position;
+            xrOriginInitialRotation = xrOrigin.rotation;
+
+            if (mountPoint != null)
+            {
+                xrOrigin.position = mountPoint.position;
+                xrOrigin.rotation = mountPoint.rotation;
+            }
+        }
+
+        // Rotación global y relativa al empezar a cogerlo
         startRotation = interactorTransform.rotation;
+        if (xrOrigin != null)
+        {
+            startLocalRotation = Quaternion.Inverse(xrOrigin.rotation) * interactorTransform.rotation;
+        }
+        else
+        {
+            startLocalRotation = startRotation;
+        }
 
         // Quitar física
         rb.useGravity = false;
@@ -94,6 +123,13 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         rb.isKinematic = false;
         rb.useGravity = true;
 
+        // Devolver XR Origin a la posición inicial
+        if (xrOrigin != null)
+        {
+            xrOrigin.position = xrOriginInitialPosition;
+            xrOrigin.rotation = xrOriginInitialRotation;
+        }
+
         if (showDebug)
             Debug.Log("[Throttle] Soltado. Parando movimiento.");
     }
@@ -103,8 +139,9 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         if (!isGrabbed || interactorTransform == null || xrOrigin == null || headTransform == null)
             return;
 
-        // 1. Calcular cuánto he girado el mando desde que lo cogí
-        Quaternion delta = Quaternion.Inverse(startRotation) * interactorTransform.rotation;
+        // 1. Calcular cuánto he girado el mando desde que lo cogí (en espacio del XR Origin)
+        Quaternion currentLocalRotation = Quaternion.Inverse(xrOrigin.rotation) * interactorTransform.rotation;
+        Quaternion delta = Quaternion.Inverse(startLocalRotation) * currentLocalRotation;
         Vector3 deltaEuler = delta.eulerAngles;
 
         float axisAngle = throttleAxis switch
@@ -163,7 +200,10 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         if (currentSpeed <= 0.01f)
             return;
 
-        // 2. Dirección = hacia donde mira la cabeza (solo en plano XZ)
+        // 2. Girar XR Origin según inclinación de cabeza (roll)
+        ApplyHeadLeanTurn();
+
+        // 3. Dirección = hacia donde mira la cabeza (solo en plano XZ)
         Vector3 forward = headTransform.forward;
         forward.y = 0f;
         if (forward.sqrMagnitude < 0.0001f)
@@ -174,5 +214,25 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         Vector3 motion = forward * currentSpeed * Time.deltaTime;
 
         xrOrigin.position += motion;
+    }
+
+    private void ApplyHeadLeanTurn()
+    {
+        if (leanSensitivity <= leanDeadZone || maxTurnSpeed <= 0f)
+            return;
+
+        float rollAngle = headTransform.localEulerAngles.z;
+        if (rollAngle > 180f)
+            rollAngle -= 360f;
+
+        float absRoll = Mathf.Abs(rollAngle);
+        if (absRoll <= leanDeadZone)
+            return;
+
+        float leanPercent = Mathf.Clamp01((absRoll - leanDeadZone) / (leanSensitivity - leanDeadZone));
+        float turnDirection = Mathf.Sign(rollAngle);
+        float yawDelta = -turnDirection * leanPercent * maxTurnSpeed * Time.deltaTime;
+
+        xrOrigin.Rotate(Vector3.up, yawDelta, Space.World);
     }
 }

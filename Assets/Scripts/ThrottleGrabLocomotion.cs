@@ -32,11 +32,19 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     public float brakeRate = 10f;         // m/s por segundo al frenar girando hacia atrás
     public float naturalDrag = 2f;        // m/s por segundo cuando no hay input
 
+    [Header("Aceleración realista")]
+    public float throttleResponseSmoothing = 6f; // Qué tan rápido sube/baja el gas
+    public AnimationCurve accelerationBySpeed = AnimationCurve.EaseInOut(0f, 1f, 1f, 0.2f);
+
     [Header("Freno con gatillo")]
     public float triggerBrakeStrength = 20f; // m/s por segundo aplicados por el gatillo
     public float triggerBrakeSmoothing = 4f;  // Qué tan rápido sigue la presión real
     public float triggerBrakeExponent = 2f;   // >1 reduce sensibilidad al inicio
     public AnimationCurve triggerBrakeCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+
+    [Header("Frenado realista")]
+    public float engineBrakeRate = 3f;               // Freno motor cuando se suelta gas
+    public AnimationCurve handBrakeCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
     [Header("Giro por inclinación de cabeza")]
     public float leanSensitivity = 40f;   // Grados para giro máximo
     public float maxTurnSpeed = 60f;      // Grados por segundo al inclinarse
@@ -49,7 +57,9 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     [SerializeField] private float lastBrakeInput;
     [SerializeField] private float lastTriggerBrake;
     [SerializeField] private float currentSpeed;
+    [SerializeField] private float lastSmoothedThrottle;
     private float triggerBrakeFiltered;
+    private float smoothedThrottle;
 
     private XRGrabInteractable grab;
     private Rigidbody rb;
@@ -136,6 +146,8 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         if (bodyParent != null)
             transform.SetParent(bodyParent, true);
 
+        smoothedThrottle = 0f;
+
         if (showDebug)
             Debug.Log("[Throttle] Agarrado. Empezando a leer giro.");
     }
@@ -158,6 +170,8 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
             xrOrigin.position = xrOriginInitialPosition;
             xrOrigin.rotation = xrOriginInitialRotation;
         }
+
+        smoothedThrottle = 0f;
 
         if (showDebug)
             Debug.Log("[Throttle] Soltado. Parando movimiento.");
@@ -202,6 +216,13 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
             brakeInput = Mathf.InverseLerp(deadZoneAngle, maxThrottleAngle, Mathf.Min(maxThrottleAngle, backwardAngle));
         }
 
+        smoothedThrottle = Mathf.MoveTowards(
+            smoothedThrottle,
+            throttleForward,
+            Time.deltaTime * Mathf.Max(0.01f, throttleResponseSmoothing));
+
+        float usedThrottle = smoothedThrottle;
+
         float triggerBrakeInput = 0f;
         if (brakeTriggerAction.action != null)
         {
@@ -227,15 +248,27 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
 
         lastAngle = axisAngle;
         lastForwardInput = throttleForward;
-        lastBrakeInput = brakeInput;
+        lastSmoothedThrottle = usedThrottle;
         lastTriggerBrake = triggerBrakeEffective;
 
+        float appliedHandBrake = handBrakeCurve != null
+            ? Mathf.Clamp01(handBrakeCurve.Evaluate(brakeInput))
+            : brakeInput;
+
+        lastBrakeInput = appliedHandBrake;
+
         // Actualizar velocidad actual combinando aceleración y frenado en la misma ecuación
-        float accelPerSecond = accelerationRate * throttleForward;
-        float brakePerSecond = naturalDrag;
-        if (brakeInput > 0f)
+        float normalizedSpeed = maxSpeed > 0.0001f ? Mathf.Clamp01(currentSpeed / maxSpeed) : 0f;
+        float accelSpeedFactor = accelerationBySpeed != null
+            ? Mathf.Clamp01(accelerationBySpeed.Evaluate(normalizedSpeed))
+            : 1f;
+
+        float accelPerSecond = accelerationRate * usedThrottle * accelSpeedFactor;
+
+        float brakePerSecond = naturalDrag + Mathf.Lerp(engineBrakeRate, 0f, usedThrottle);
+        if (appliedHandBrake > 0f)
         {
-            brakePerSecond += brakeRate * brakeInput;
+            brakePerSecond += brakeRate * appliedHandBrake;
         }
         if (triggerBrakeEffective > 0f)
         {
@@ -246,7 +279,7 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
 
         if (showDebug)
         {
-            Debug.Log($"[Throttle] Axis({throttleAxis}): {axisAngle:F1}  Forward: {throttleForward:F2}  Brake: {brakeInput:F2}  TriggerRaw: {triggerBrakeInput:F2}  TriggerShaped: {triggerBrakeShaped:F2}  TriggerEval: {triggerBrakeEffective:F2}  NetAcc: {netAcceleration:F2}");
+            Debug.Log($"[Throttle] Axis({throttleAxis}): {axisAngle:F1}  ThrottleRaw: {throttleForward:F2}  ThrottleSm: {usedThrottle:F2}  BrakeTwist: {brakeInput:F2}  BrakeApplied: {appliedHandBrake:F2}  TriggerRaw: {triggerBrakeInput:F2}  TriggerEval: {triggerBrakeEffective:F2}  Speed%: {normalizedSpeed:F2}  NetAcc: {netAcceleration:F2}");
         }
 
         currentSpeed = Mathf.Clamp(currentSpeed + netAcceleration * Time.deltaTime, 0f, maxSpeed);

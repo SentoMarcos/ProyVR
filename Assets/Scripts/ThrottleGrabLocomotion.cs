@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
@@ -17,6 +18,9 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     public Transform xrOrigin;      // XR Origin (XR Rig)
     public Transform headTransform; // Main Camera (cabeza)
     public Transform bodyParent;    // Camera Offset o Main Camera (donde se pega el cubo)
+    public Transform mountPoint;    // Punto sobre la moto donde se debe colocar el XR Origin
+    [Header("Acciones de entrada")]
+    public InputActionProperty brakeTriggerAction; // Gatillo trasero mano izquierda
 
     [Header("Movimiento tipo moto")]
     public float maxSpeed = 3f;        // Velocidad máxima (m/s)
@@ -28,19 +32,44 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
     public float brakeRate = 10f;         // m/s por segundo al frenar girando hacia atrás
     public float naturalDrag = 2f;        // m/s por segundo cuando no hay input
 
+    [Header("Aceleración realista")]
+    public float throttleResponseSmoothing = 6f; // Qué tan rápido sube/baja el gas
+    public AnimationCurve accelerationBySpeed = AnimationCurve.EaseInOut(0f, 1f, 1f, 0.2f);
+
+    [Header("Freno con gatillo")]
+    public float triggerBrakeStrength = 20f; // m/s por segundo aplicados por el gatillo
+    public float triggerBrakeSmoothing = 4f;  // Qué tan rápido sigue la presión real
+    public float triggerBrakeExponent = 2f;   // >1 reduce sensibilidad al inicio
+    public AnimationCurve triggerBrakeCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+
+    [Header("Frenado realista")]
+    public float engineBrakeRate = 3f;               // Freno motor cuando se suelta gas
+    public AnimationCurve handBrakeCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+    [Header("Giro por inclinación de cabeza")]
+    public float leanSensitivity = 40f;   // Grados para giro máximo
+    public float maxTurnSpeed = 60f;      // Grados por segundo al inclinarse
+    public float leanDeadZone = 5f;
+
     [Header("Debug")]
     public bool showDebug = true;
     [SerializeField] private float lastAngle;
     [SerializeField] private float lastForwardInput;
     [SerializeField] private float lastBrakeInput;
+    [SerializeField] private float lastTriggerBrake;
     [SerializeField] private float currentSpeed;
+    [SerializeField] private float lastSmoothedThrottle;
+    private float triggerBrakeFiltered;
+    private float smoothedThrottle;
 
     private XRGrabInteractable grab;
     private Rigidbody rb;
     private Transform originalParent;
+    private Vector3 xrOriginInitialPosition;
+    private Quaternion xrOriginInitialRotation;
     private bool isGrabbed = false;
     private Transform interactorTransform;  // Mano / mando que lo coge
-    private Quaternion startRotation;       // Rotación de referencia al coger
+    private Quaternion startRotation;       // Rotación mundial de referencia al coger
+    private Quaternion startLocalRotation;  // Rotación relativa al XR Origin al coger
 
     void Awake()
     {
@@ -50,6 +79,24 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
 
         grab.selectEntered.AddListener(OnGrab);
         grab.selectExited.AddListener(OnRelease);
+    }
+
+    void OnEnable()
+    {
+        var action = brakeTriggerAction.action;
+        if (action != null && action.enabled == false)
+        {
+            action.Enable();
+        }
+    }
+
+    void OnDisable()
+    {
+        var action = brakeTriggerAction.action;
+        if (action != null && action.enabled)
+        {
+            action.Disable();
+        }
     }
 
     void OnDestroy()
@@ -67,8 +114,29 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
             interactorTransform = args.interactorObject.transform;
         }
 
-        // Rotación global al empezar a cogerlo
+        // Guardar posición y rotación iniciales del XR Origin
+        if (xrOrigin != null)
+        {
+            xrOriginInitialPosition = xrOrigin.position;
+            xrOriginInitialRotation = xrOrigin.rotation;
+
+            if (mountPoint != null)
+            {
+                xrOrigin.position = mountPoint.position;
+                xrOrigin.rotation = mountPoint.rotation;
+            }
+        }
+
+        // Rotación global y relativa al empezar a cogerlo
         startRotation = interactorTransform.rotation;
+        if (xrOrigin != null)
+        {
+            startLocalRotation = Quaternion.Inverse(xrOrigin.rotation) * interactorTransform.rotation;
+        }
+        else
+        {
+            startLocalRotation = startRotation;
+        }
 
         // Quitar física
         rb.useGravity = false;
@@ -77,6 +145,8 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         // Pegar al cuerpo/cabeza
         if (bodyParent != null)
             transform.SetParent(bodyParent, true);
+
+        smoothedThrottle = 0f;
 
         if (showDebug)
             Debug.Log("[Throttle] Agarrado. Empezando a leer giro.");
@@ -94,6 +164,15 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         rb.isKinematic = false;
         rb.useGravity = true;
 
+        // Devolver XR Origin a la posición inicial
+        if (xrOrigin != null)
+        {
+            xrOrigin.position = xrOriginInitialPosition;
+            xrOrigin.rotation = xrOriginInitialRotation;
+        }
+
+        smoothedThrottle = 0f;
+
         if (showDebug)
             Debug.Log("[Throttle] Soltado. Parando movimiento.");
     }
@@ -103,8 +182,9 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         if (!isGrabbed || interactorTransform == null || xrOrigin == null || headTransform == null)
             return;
 
-        // 1. Calcular cuánto he girado el mando desde que lo cogí
-        Quaternion delta = Quaternion.Inverse(startRotation) * interactorTransform.rotation;
+        // 1. Calcular cuánto he girado el mando desde que lo cogí (en espacio del XR Origin)
+        Quaternion currentLocalRotation = Quaternion.Inverse(xrOrigin.rotation) * interactorTransform.rotation;
+        Quaternion delta = Quaternion.Inverse(startLocalRotation) * currentLocalRotation;
         Vector3 deltaEuler = delta.eulerAngles;
 
         float axisAngle = throttleAxis switch
@@ -136,34 +216,81 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
             brakeInput = Mathf.InverseLerp(deadZoneAngle, maxThrottleAngle, Mathf.Min(maxThrottleAngle, backwardAngle));
         }
 
-        if (showDebug)
+        smoothedThrottle = Mathf.MoveTowards(
+            smoothedThrottle,
+            throttleForward,
+            Time.deltaTime * Mathf.Max(0.01f, throttleResponseSmoothing));
+
+        float usedThrottle = smoothedThrottle;
+
+        float triggerBrakeInput = 0f;
+        if (brakeTriggerAction.action != null)
         {
-            Debug.Log($"[Throttle] Axis({throttleAxis}): {axisAngle:F1}  Forward: {throttleForward:F2}  Brake: {brakeInput:F2}");
+            triggerBrakeInput = Mathf.Clamp01(brakeTriggerAction.action.ReadValue<float>());
         }
+
+        float triggerBrakeShaped = triggerBrakeInput;
+        if (triggerBrakeExponent > 0.01f)
+        {
+            triggerBrakeShaped = Mathf.Pow(triggerBrakeInput, triggerBrakeExponent);
+        }
+
+        float triggerBrakeTarget = triggerBrakeCurve != null
+            ? Mathf.Clamp01(triggerBrakeCurve.Evaluate(triggerBrakeShaped))
+            : triggerBrakeShaped;
+
+        triggerBrakeFiltered = Mathf.MoveTowards(
+            triggerBrakeFiltered,
+            triggerBrakeTarget,
+            Time.deltaTime * Mathf.Max(0.01f, triggerBrakeSmoothing));
+
+        float triggerBrakeEffective = triggerBrakeFiltered;
 
         lastAngle = axisAngle;
         lastForwardInput = throttleForward;
-        lastBrakeInput = brakeInput;
+        lastSmoothedThrottle = usedThrottle;
+        lastTriggerBrake = triggerBrakeEffective;
 
-        // Actualizar velocidad actual
-        if (throttleForward > 0f)
+        float appliedHandBrake = handBrakeCurve != null
+            ? Mathf.Clamp01(handBrakeCurve.Evaluate(brakeInput))
+            : brakeInput;
+
+        lastBrakeInput = appliedHandBrake;
+
+        // Actualizar velocidad actual combinando aceleración y frenado en la misma ecuación
+        float normalizedSpeed = maxSpeed > 0.0001f ? Mathf.Clamp01(currentSpeed / maxSpeed) : 0f;
+        float accelSpeedFactor = accelerationBySpeed != null
+            ? Mathf.Clamp01(accelerationBySpeed.Evaluate(normalizedSpeed))
+            : 1f;
+
+        float accelPerSecond = accelerationRate * usedThrottle * accelSpeedFactor;
+
+        float brakePerSecond = naturalDrag + Mathf.Lerp(engineBrakeRate, 0f, usedThrottle);
+        if (appliedHandBrake > 0f)
         {
-            float target = maxSpeed * throttleForward;
-            currentSpeed = Mathf.MoveTowards(currentSpeed, target, accelerationRate * Time.deltaTime);
+            brakePerSecond += brakeRate * appliedHandBrake;
         }
-        else if (brakeInput > 0f)
+        if (triggerBrakeEffective > 0f)
         {
-            currentSpeed = Mathf.MoveTowards(currentSpeed, 0f, brakeRate * brakeInput * Time.deltaTime);
+            brakePerSecond += triggerBrakeStrength * triggerBrakeEffective;
         }
-        else
+
+        float netAcceleration = accelPerSecond - brakePerSecond; // positivo acelera, negativo frena
+
+        if (showDebug)
         {
-            currentSpeed = Mathf.MoveTowards(currentSpeed, 0f, naturalDrag * Time.deltaTime);
+            Debug.Log($"[Throttle] Axis({throttleAxis}): {axisAngle:F1}  ThrottleRaw: {throttleForward:F2}  ThrottleSm: {usedThrottle:F2}  BrakeTwist: {brakeInput:F2}  BrakeApplied: {appliedHandBrake:F2}  TriggerRaw: {triggerBrakeInput:F2}  TriggerEval: {triggerBrakeEffective:F2}  Speed%: {normalizedSpeed:F2}  NetAcc: {netAcceleration:F2}");
         }
+
+        currentSpeed = Mathf.Clamp(currentSpeed + netAcceleration * Time.deltaTime, 0f, maxSpeed);
 
         if (currentSpeed <= 0.01f)
             return;
 
-        // 2. Dirección = hacia donde mira la cabeza (solo en plano XZ)
+        // 2. Girar XR Origin según inclinación de cabeza (roll)
+        ApplyHeadLeanTurn();
+
+        // 3. Dirección = hacia donde mira la cabeza (solo en plano XZ)
         Vector3 forward = headTransform.forward;
         forward.y = 0f;
         if (forward.sqrMagnitude < 0.0001f)
@@ -174,5 +301,25 @@ public class ThrottleGrabLocomotionSimple : MonoBehaviour
         Vector3 motion = forward * currentSpeed * Time.deltaTime;
 
         xrOrigin.position += motion;
+    }
+
+    private void ApplyHeadLeanTurn()
+    {
+        if (leanSensitivity <= leanDeadZone || maxTurnSpeed <= 0f)
+            return;
+
+        float rollAngle = headTransform.localEulerAngles.z;
+        if (rollAngle > 180f)
+            rollAngle -= 360f;
+
+        float absRoll = Mathf.Abs(rollAngle);
+        if (absRoll <= leanDeadZone)
+            return;
+
+        float leanPercent = Mathf.Clamp01((absRoll - leanDeadZone) / (leanSensitivity - leanDeadZone));
+        float turnDirection = Mathf.Sign(rollAngle);
+        float yawDelta = -turnDirection * leanPercent * maxTurnSpeed * Time.deltaTime;
+
+        xrOrigin.Rotate(Vector3.up, yawDelta, Space.World);
     }
 }

@@ -59,7 +59,5 @@ sysinfo.txt
 *.unitypackage
 
 # Crashlytics generated file
-Assets/Scenes/Menu_assets/
-*.fbx
 crashlytics-build.properties
 

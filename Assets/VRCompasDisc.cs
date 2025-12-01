@@ -24,7 +24,7 @@ public class VRCompassDisc : MonoBehaviour
 
         // Rotate the disc so that north on the disc always points to world north
         // Negative yaw so the disc appears to rotate under a fixed pointer
-        compassDisc.localEulerAngles = new Vector3(0f, 0f, -yaw);
+        compassDisc.localEulerAngles = new Vector3(-20f, 0f, -yaw);
 
         // Optional text: N / NE / E + angle
         if (headingText != null)

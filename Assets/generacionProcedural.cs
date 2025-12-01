@@ -114,10 +114,83 @@ public class ProceduralGenerator : MonoBehaviour
         GenerateAcera(segment.transform, 7, aceras);
         GenerateEdificio(segment.transform, 8, edificios);
 
+        // ¡AÑADIR COLLIDERS AL SEGMENTO!
+        AddCollidersToSegment(segment);
+
         segments.Add(segment);
         generatedSegments.Add(segmentIndex);
 
         Debug.Log($"Segmento generado: {segmentIndex} en Z: {segment.transform.position.z}");
+    }
+
+    void AddCollidersToSegment(GameObject segment)
+    {
+        foreach (Transform child in segment.transform)
+        {
+            AddColliderBasedOnPosition(child.gameObject);
+        }
+    }
+
+    void AddColliderBasedOnPosition(GameObject obj)
+    {
+        float posX = obj.transform.position.x;
+
+        // Edificios izquierdos (posición -24)
+        if (Mathf.Abs(posX - (-24f)) < 0.1f)
+        {
+            AddBuildingCollider(obj);
+        }
+        // Edificios derechos (posición 24)
+        else if (Mathf.Abs(posX - 24f) < 0.1f)
+        {
+            AddBuildingCollider(obj);
+        }
+        // Aceras (posición -12 y 12)
+        else if (Mathf.Abs(posX - (-12f)) < 0.1f || Mathf.Abs(posX - 12f) < 0.1f)
+        {
+            AddSidewalkCollider(obj);
+        }
+        // Carreteras (posición -4, 0, 4)
+        else if (Mathf.Abs(posX - (-4f)) < 0.1f ||
+                 Mathf.Abs(posX - 0f) < 0.1f ||
+                 Mathf.Abs(posX - 4f) < 0.1f)
+        {
+            AddRoadCollider(obj);
+        }
+    }
+
+    void AddBuildingCollider(GameObject building)
+    {
+        if (building.GetComponent<Collider>() == null)
+        {
+            BoxCollider collider = building.AddComponent<BoxCollider>();
+            collider.size = new Vector3(20f, 10f, 20f); // Ancho ajustado a 20m
+            collider.center = new Vector3(0, 5f, 0);
+            Debug.Log($"Collider añadido a edificio en X: {building.transform.position.x}");
+        }
+    }
+
+    void AddSidewalkCollider(GameObject sidewalk)
+    {
+        if (sidewalk.GetComponent<Collider>() == null)
+        {
+            BoxCollider collider = sidewalk.AddComponent<BoxCollider>();
+            collider.size = new Vector3(4f, 0.3f, 20f);
+            collider.center = new Vector3(0, 0.15f, 0);
+            Debug.Log($"Collider añadido a acera en X: {sidewalk.transform.position.x}");
+        }
+    }
+
+    void AddRoadCollider(GameObject road)
+    {
+        if (road.GetComponent<Collider>() == null)
+        {
+            BoxCollider collider = road.AddComponent<BoxCollider>();
+            collider.size = new Vector3(4f, 0.1f, 20f);
+            collider.center = new Vector3(0, 0.05f, 0);
+            collider.isTrigger = true; // Para caminar sobre ella
+            Debug.Log($"Collider añadido a carretera en X: {road.transform.position.x}");
+        }
     }
 
     void GenerateEdificio(Transform parent, int laneIndex, GameObject[] prefabs)
@@ -222,4 +295,50 @@ public class ProceduralGenerator : MonoBehaviour
             Gizmos.DrawWireCube(pos, new Vector3(4f, 1f, 1f));
         }
     }
+
+    // Métodos públicos para acceder a información
+    public int GetActiveSegmentCount()
+    {
+        return segments.Count;
+    }
+
+    public float GetSegmentLength()
+    {
+        return segmentLength;
+    }
+
+    public List<GameObject> GetActiveSegments()
+    {
+        return new List<GameObject>(segments);
+    }
+
+    // Añade esto al final de la clase, antes de la última llave }
+    void OnGUI()
+    {
+        if (segments.Count > 0 && segments[0] != null)
+        {
+            // Verificar colliders en el primer segmento
+            Transform firstSegment = segments[0].transform;
+            int colliderCount = 0;
+
+            foreach (Transform child in firstSegment)
+            {
+                if (child.GetComponent<Collider>() != null)
+                {
+                    colliderCount++;
+                }
+            }
+
+            GUIStyle style = new GUIStyle(GUI.skin.label);
+            style.fontSize = 16;
+            style.normal.textColor = Color.yellow;
+
+            string info = $"Segmentos: {segments.Count}\n";
+            info += $"Colliders en primer segmento: {colliderCount}/9\n";
+            info += $"Player Z: {player?.position.z:F1}";
+
+            GUI.Label(new Rect(10, 50, 300, 100), info, style);
+        }
+    }
+
 }

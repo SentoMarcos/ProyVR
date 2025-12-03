@@ -13,6 +13,7 @@ public class ProceduralGenerator : MonoBehaviour
     public GameObject[] aceras;
     public GameObject[] carreteras;
     public GameObject[] carreterasSeguras;
+    public GameObject prefabCoche;
 
     [Header("Colisionadores automáticos")]
     public bool autoGenerateColliders = true;
@@ -197,23 +198,23 @@ public class ProceduralGenerator : MonoBehaviour
         for (int i = 0; i < roadsToPlace.Count; i++)
         {
             GameObject temp = roadsToPlace[i];
-            int randomIndex = Random.Range(i, roadsToPlace.Count);
+            int randomIndex = UnityEngine.Random.Range(i, roadsToPlace.Count);
             roadsToPlace[i] = roadsToPlace[randomIndex];
             roadsToPlace[randomIndex] = temp;
         }
 
         // 5. Instanciar en las posiciones
+        List<GameObject> instantiatedRoads = new List<GameObject>();
+
         for (int i = 0; i < 3; i++)
         {
             Vector3 position = new Vector3(carrilPositions[3 + i], 0, parent.position.z);
             GameObject prefab = roadsToPlace[i];
+
             GameObject instance;
             if (prefab != null)
-            {
                 instance = Instantiate(prefab, position, Quaternion.identity, parent);
-            }
             else
-            {
                 instance = CreatePrimitiveFallback(
                     PrimitiveType.Cube,
                     fallbackRoadScale,
@@ -222,10 +223,44 @@ public class ProceduralGenerator : MonoBehaviour
                     parent,
                     position,
                     Quaternion.identity);
-            }
 
+            instantiatedRoads.Add(instance);
             EnsureCollider(instance, roadMaterial);
         }
+        // ======================
+        // REGLA DE LOS COCHES
+        // ======================
+
+        // Filtrar cuáles de las 3 carreteras instanciadas son seguras
+        List<GameObject> safeRoadsInSegment = new List<GameObject>();
+
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject prefab = roadsToPlace[i];
+            GameObject instance = instantiatedRoads[i];
+
+            if (prefab != null && System.Array.Exists(carreterasSeguras, safe => safe == prefab))
+                safeRoadsInSegment.Add(instance);
+        }
+
+
+
+        // Si hay exactamente 2 carreteras seguras → colocar coche en UNA sola
+        if (safeRoadsInSegment.Count == 2)
+        {
+            GameObject chosenRoad = safeRoadsInSegment[Random.Range(0, safeRoadsInSegment.Count)];
+
+            Vector3 carPos = chosenRoad.transform.position + new Vector3(0, 0.66f, 0);
+            Debug.Log("Coche colocado en: " + carPos + " en carretera: " + chosenRoad.name);
+
+            GameObject instance = Instantiate(prefabCoche, chosenRoad.transform);
+            instance.transform.localPosition = new Vector3(0, 0.5f, 0); // relativa a la carretera
+            instance.transform.localRotation = Quaternion.identity;
+            instance.transform.localScale = new Vector3(100f,100f,100f);
+
+        }
+
+
     }
 
     // M�todo para depuraci�n: muestra los segmentos actuales

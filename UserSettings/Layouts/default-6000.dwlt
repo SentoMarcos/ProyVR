@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 989
   m_ShowMode: 4
-  m_Title: Project
+  m_Title: Scene
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -212,7 +212,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ProjectBrowser
+  m_Name: ConsoleWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -229,8 +229,8 @@ MonoBehaviour:
   - {fileID: 16}
   - {fileID: 15}
   - {fileID: 17}
-  m_Selected: 1
-  m_LastSelected: 2
+  m_Selected: 2
+  m_LastSelected: 1
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -881,11 +881,11 @@ MonoBehaviour:
       displayed: 0
       id: SceneView/CamerasOverlay
       index: 0
-      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":true,"m_FloatingSnapOffset":{"x":-254.0,"y":-434.66668701171877},"m_SnapOffsetDelta":{"x":0.0,"y":0.0},"m_FloatingSnapCorner":3,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
+      contents: '{"m_Layout":4,"m_Collapsed":false,"m_Folded":false,"m_Floating":true,"m_FloatingSnapOffset":{"x":-254.0,"y":-434.66668701171877},"m_SnapOffsetDelta":{"x":0.0,"y":11.4666748046875},"m_FloatingSnapCorner":3,"m_Size":{"x":0.0,"y":0.0},"m_SizeOverridden":false}'
       floating: 1
       collapsed: 0
       snapOffset: {x: -254, y: -434.6667}
-      snapOffsetDelta: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 11.466675}
       snapCorner: 3
       layout: 4
       size: {x: 0, y: 0}
@@ -1296,8 +1296,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
+    m_SelectedInstanceIDs: 8acd0000
+    m_LastClickedInstanceID: 52618
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000a65900001282000096460000428f000036440000b48f00006e520400d68b0400209d0000020700002c080100b2e1010014820000947900007e370100eeac0000dcce000034bc000000000000f6e5000022fd0000cebd0000d0bd0000a2b700004eb70000
     m_CreateAssetUtility:
@@ -1310,7 +1310,7 @@ MonoBehaviour:
     m_ScrollPosition: {x: 0, y: 0}
     m_GridSize: 89
   m_SkipHiddenPackages: 1
-  m_DirectoriesAreaWidth: 193.8
+  m_DirectoriesAreaWidth: 195.40001
 --- !u!114 &17
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1535,7 +1535,7 @@ MonoBehaviour:
   m_ObjectsLockedBeforeSerialization: []
   m_InstanceIDsLockedBeforeSerialization: 
   m_PreviewResizer:
-    m_CachedPref: -237.4
+    m_CachedPref: 378.33337
     m_ControlHash: -371814159
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectInstanceID: -1

@@ -4,8 +4,8 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - LeftHand
-  - RightHand
+  - LeftFreezeZone
+  - RightFreezeZone
   layers:
   - Default
   - TransparentFX

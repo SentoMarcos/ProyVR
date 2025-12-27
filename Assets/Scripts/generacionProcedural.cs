@@ -1,14 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ProceduralGenerator : MonoBehaviour
 {
-    [Header("Configuración de Generación")]
+    [Header("Configuraci�n de Generaci�n")]
     public float spawnDistance = 100f;
     public float destroyDistance = 50f;
     public int initialSegments = 10;
-    public int maxActiveSegments = 50;
 
     [Header("Prefabs")]
     public GameObject[] edificios;
@@ -36,102 +34,35 @@ public class ProceduralGenerator : MonoBehaviour
 
     [Header("Posiciones de Carril")]
     public float[] carrilPositions = {
-        -24f, -12f, -8f, -4f, 0f, 4f, 8f, 12f, 24f
-    };
-
-    [Header("Sistema de Puntuación")]
-    public Text scoreText;
-    public Text levelText;
-    public int pointsPerSegment = 100;
-    public float scoreUpdateInterval = 0.1f;
-
-    [Header("Sistema de Niveles")]
-    public int pointsPerLevel = 1000;
-    public int maxLevel = 10;
-
-    [Header("Configuración Dificultad")]
-    public AnimationCurve difficultyCurve;
-    public float speedMultiplierPerLevel = 1.1f;
-
-    [System.Serializable]
-    public class LevelConfig
-    {
-        public int level;
-        [Range(0, 3)] public int minGoodRoads = 1;
-        [Range(0, 3)] public int maxGoodRoads = 3;
-        [Range(0f, 1f)] public float badRoadChance = 0f;
-    }
-
-    [Header("Configuración por Nivel")]
-    public LevelConfig[] levelConfigs = {
-        new LevelConfig { level = 1, minGoodRoads = 3, maxGoodRoads = 3, badRoadChance = 0.0f },
-        new LevelConfig { level = 2, minGoodRoads = 2, maxGoodRoads = 3, badRoadChance = 0.1f },
-        new LevelConfig { level = 3, minGoodRoads = 2, maxGoodRoads = 3, badRoadChance = 0.2f },
-        new LevelConfig { level = 4, minGoodRoads = 2, maxGoodRoads = 3, badRoadChance = 0.3f },
-        new LevelConfig { level = 5, minGoodRoads = 2, maxGoodRoads = 3, badRoadChance = 0.4f },
-        new LevelConfig { level = 6, minGoodRoads = 1, maxGoodRoads = 2, badRoadChance = 0.6f },
-        new LevelConfig { level = 7, minGoodRoads = 1, maxGoodRoads = 2, badRoadChance = 0.7f },
-        new LevelConfig { level = 8, minGoodRoads = 1, maxGoodRoads = 2, badRoadChance = 0.8f },
-        new LevelConfig { level = 9, minGoodRoads = 1, maxGoodRoads = 1, badRoadChance = 0.9f },
-        new LevelConfig { level = 10, minGoodRoads = 1, maxGoodRoads = 1, badRoadChance = 1.0f }
+        -24f, // Edificio izquierdo (20m)
+        -12f, // Acera izquierda (4m)
+        -8f,  // Vac�o izquierdo (4m)
+        -4f,  // Carril 1 (4m)
+        0f,   // Carril 2 (4m)
+        4f,   // Carril 3 (4m)
+        8f,   // Vac�o derecho (4m)
+        12f,  // Acera derecha (4m)
+        24f   // Edificio derecho (20m)
     };
 
     private Transform player;
     private List<GameObject> segments = new List<GameObject>();
     private float segmentLength = 20f;
-
-    // Pooling
-    private Queue<GameObject> segmentPool = new Queue<GameObject>();
-    private const int POOL_SIZE = 60;
-
-    // Variables de juego
-    private int currentScore = 0;
-    private int highestSegmentReached = 0;
-    private float lastScoreUpdateTime = 0f;
-    private int currentLevel = 1;
-    private int nextLevelThreshold = 1000;
-    private float currentSpeedMultiplier = 1f;
-
-    // Debug
-    private string debugInfo = "";
-    private int totalSegmentsGenerated = 0;
-    private int goodRoadsCount = 0;
-    private int badRoadsCount = 0;
-    private int lastDebugSegmentCount = 0;
+    private int lastGeneratedSegment = -1;
+    private HashSet<int> generatedSegments = new HashSet<int>();
 
     void Start()
     {
-        player = Camera.main?.transform;
-
-        if (player == null)
-        {
-            Debug.LogError("No se encontró Main Camera!");
-            GameObject tempCam = new GameObject("TempCamera");
-            tempCam.AddComponent<Camera>();
-            tempCam.tag = "MainCamera";
-            player = tempCam.transform;
-        }
-
-        InitializeUI();
-        InitializeSegmentPool();
-
-        Debug.Log($"=== GENERADOR INICIALIZADO ===");
-        Debug.Log($"Segmentos iniciales: {initialSegments}");
+        player = Camera.main.transform;
 
         // Generar segmentos iniciales
         for (int i = 0; i < initialSegments; i++)
         {
-            GenerateSegment(i);
-        }
-    }
-
-    void InitializeSegmentPool()
-    {
-        for (int i = 0; i < POOL_SIZE; i++)
-        {
-            GameObject segment = new GameObject($"PoolSegment_{i}");
-            segment.SetActive(false);
-            segmentPool.Enqueue(segment);
+            if (!generatedSegments.Contains(i))
+            {
+                GenerateSegment(i);
+                generatedSegments.Add(i);
+            }
         }
     }
 
@@ -142,69 +73,22 @@ public class ProceduralGenerator : MonoBehaviour
         float playerZ = player.position.z;
         int currentPlayerSegment = Mathf.FloorToInt(playerZ / segmentLength);
 
-        UpdateScore(currentPlayerSegment);
-        CheckLevelUp();
+        // Generar nuevos segmentos adelante
+        int segmentsToGenerate = Mathf.FloorToInt(spawnDistance / segmentLength);
+        int targetSegment = currentPlayerSegment + segmentsToGenerate;
 
-        // Control de generación con límites
-        if (segments.Count < maxActiveSegments)
+        for (int segmentIndex = currentPlayerSegment; segmentIndex <= targetSegment; segmentIndex++)
         {
-            int segmentsAhead = Mathf.FloorToInt(spawnDistance / segmentLength);
-            segmentsAhead = Mathf.Min(segmentsAhead, 10);
-
-            int maxActiveSegment = currentPlayerSegment + segmentsAhead;
-
-            for (int segmentIndex = currentPlayerSegment; segmentIndex <= maxActiveSegment; segmentIndex++)
+            if (!generatedSegments.Contains(segmentIndex))
             {
-                if (segmentIndex < 0) continue;
-
-                if (!IsSegmentActive(segmentIndex))
-                {
-                    GenerateSegment(segmentIndex);
-
-                    if (segments.Count >= maxActiveSegments)
-                        break;
-                }
+                GenerateSegment(segmentIndex);
+                generatedSegments.Add(segmentIndex);
+                lastGeneratedSegment = Mathf.Max(lastGeneratedSegment, segmentIndex);
             }
         }
 
-        // Limpieza
+        // Destruir segmentos atr�s
         CleanupSegments(playerZ);
-
-        // Debug periódico
-        if (Time.frameCount % 30 == 0 && segments.Count != lastDebugSegmentCount)
-        {
-            UpdateDebugInfo();
-            lastDebugSegmentCount = segments.Count;
-        }
-    }
-
-    void UpdateDebugInfo()
-    {
-        LevelConfig config = GetCurrentLevelConfig();
-
-        debugInfo = $"=== DEBUG INFO ===\n";
-        debugInfo += $"Segmentos activos: {segments.Count}/{maxActiveSegments}\n";
-        debugInfo += $"Nivel: {currentLevel} ({config.minGoodRoads}-{config.maxGoodRoads} buenas)\n";
-        debugInfo += $"Prob. mala: {config.badRoadChance:P0}\n";
-        debugInfo += $"Puntuación: {currentScore} / {nextLevelThreshold}\n";
-        debugInfo += $"Player Z: {player?.position.z:F1}\n";
-        debugInfo += $"Multiplicador: {currentSpeedMultiplier:F2}x";
-
-        Debug.Log(debugInfo);
-    }
-
-    bool IsSegmentActive(int segmentIndex)
-    {
-        foreach (var seg in segments)
-        {
-            if (seg == null) continue;
-
-            float segZ = seg.transform.position.z;
-            int segIndex = Mathf.FloorToInt(segZ / segmentLength);
-            if (segIndex == segmentIndex)
-                return true;
-        }
-        return false;
     }
 
     void CleanupSegments(float playerZ)
@@ -220,52 +104,28 @@ public class ProceduralGenerator : MonoBehaviour
             float segmentZ = segments[i].transform.position.z;
             if (segmentZ < playerZ - destroyDistance)
             {
-                ReturnSegmentToPool(segments[i]);
+                int segmentIndex = Mathf.FloorToInt(segmentZ / segmentLength);
+                generatedSegments.Remove(segmentIndex);
+
+                Destroy(segments[i]);
                 segments.RemoveAt(i);
             }
         }
     }
 
-    void ReturnSegmentToPool(GameObject segment)
-    {
-        if (segment == null) return;
-
-        segment.SetActive(false);
-
-        // Limpiar hijos
-        Transform[] children = new Transform[segment.transform.childCount];
-        for (int i = 0; i < segment.transform.childCount; i++)
-            children[i] = segment.transform.GetChild(i);
-
-        foreach (Transform child in children)
-            Destroy(child.gameObject);
-
-        segmentPool.Enqueue(segment);
-    }
-
-    GameObject GetSegmentFromPool()
-    {
-        if (segmentPool.Count > 0)
-            return segmentPool.Dequeue();
-
-        Debug.LogWarning("Pool vacío, creando nuevo segmento");
-        return new GameObject("DynamicSegment");
-    }
-
     void GenerateSegment(int segmentIndex)
     {
-        if (segmentIndex < 0) return;
+        // Verificaci�n adicional para evitar duplicados
+        if (generatedSegments.Contains(segmentIndex))
+        {
+            Debug.LogWarning($"Intento de generar segmento duplicado: {segmentIndex}");
+            return;
+        }
 
-        GameObject segment = GetSegmentFromPool();
-        segment.name = $"Segment_{segmentIndex}";
+        GameObject segment = new GameObject($"Segment_{segmentIndex}");
         segment.transform.position = new Vector3(0, 0, segmentIndex * segmentLength);
-        segment.SetActive(true);
 
-        // Limpiar hijos previos
-        foreach (Transform child in segment.transform)
-            Destroy(child.gameObject);
-
-        // Generar contenido usando el sistema mejorado con fallback
+        // Patr�n fijo de elementos
         GenerateEdificio(segment.transform, 0, edificios);
         GenerateAcera(segment.transform, 1, aceras);
         GenerateRoads(segment.transform, segmentIndex);
@@ -273,259 +133,11 @@ public class ProceduralGenerator : MonoBehaviour
         GenerateEdificio(segment.transform, 8, edificios);
 
         segments.Add(segment);
-        totalSegmentsGenerated++;
+        generatedSegments.Add(segmentIndex);
+
+        Debug.Log($"Segmento generado: {segmentIndex} en Z: {segment.transform.position.z}");
     }
 
-    void GenerateRoads(Transform parent, int segmentIndex)
-    {
-        LevelConfig config = GetCurrentLevelConfig();
-
-        int minGoodRoads = Mathf.Clamp(config.minGoodRoads, 1, 3);
-        int maxGoodRoads = Mathf.Clamp(config.maxGoodRoads, minGoodRoads, 3);
-        int targetGoodRoads = Random.Range(minGoodRoads, maxGoodRoads + 1);
-
-        List<GameObject> roadsToPlace = new List<GameObject>();
-        List<GameObject> instantiatedRoads = new List<GameObject>();
-
-        // Añadir carreteras buenas
-        for (int i = 0; i < targetGoodRoads; i++)
-        {
-            GameObject safeRoad = GetRandomSafeRoad();
-            if (safeRoad != null)
-            {
-                roadsToPlace.Add(safeRoad);
-                goodRoadsCount++;
-            }
-        }
-
-        // Llenar espacios restantes
-        int remainingSlots = 3 - targetGoodRoads;
-        for (int i = 0; i < remainingSlots; i++)
-        {
-            if (Random.value <= config.badRoadChance && carreteras.Length > 0)
-            {
-                GameObject badRoad = GetRandomBadRoad();
-                if (badRoad != null)
-                {
-                    roadsToPlace.Add(badRoad);
-                    badRoadsCount++;
-                }
-                else
-                {
-                    GameObject safeRoad = GetRandomSafeRoad();
-                    if (safeRoad != null)
-                    {
-                        roadsToPlace.Add(safeRoad);
-                        goodRoadsCount++;
-                    }
-                }
-            }
-            else
-            {
-                GameObject safeRoad = GetRandomSafeRoad();
-                if (safeRoad != null)
-                {
-                    roadsToPlace.Add(safeRoad);
-                    goodRoadsCount++;
-                }
-            }
-        }
-
-        // Mezclar
-        ShuffleList(roadsToPlace);
-
-        // Instanciar
-        for (int i = 0; i < 3; i++)
-        {
-            Vector3 position = new Vector3(carrilPositions[3 + i], 0, parent.position.z);
-            GameObject prefab = roadsToPlace[i];
-            GameObject instance;
-
-            if (prefab != null)
-            {
-                instance = Instantiate(prefab, position, Quaternion.identity, parent);
-            }
-            else
-            {
-                instance = CreatePrimitiveFallback(
-                    PrimitiveType.Cube,
-                    fallbackRoadScale,
-                    fallbackRoadColor,
-                    "RoadFallback",
-                    parent,
-                    position,
-                    Quaternion.identity);
-            }
-
-            if (IsBadRoad(prefab))
-            {
-                instance.name = $"{instance.name}_PELIGROSA";
-            }
-
-            EnsureCollider(instance, roadMaterial);
-            instantiatedRoads.Add(instance);
-        }
-
-        // REGLA DE LOS COCHES (del segundo código)
-        List<GameObject> safeRoadsInSegment = new List<GameObject>();
-        for (int i = 0; i < 3; i++)
-        {
-            if (!IsBadRoad(roadsToPlace[i]))
-            {
-                safeRoadsInSegment.Add(instantiatedRoads[i]);
-            }
-        }
-
-        if (safeRoadsInSegment.Count == 2 && prefabCoche != null)
-        {
-            GameObject chosenRoad = safeRoadsInSegment[Random.Range(0, safeRoadsInSegment.Count)];
-            Vector3 carPos = chosenRoad.transform.position + new Vector3(0, 0.66f, 0);
-
-            GameObject carInstance = Instantiate(prefabCoche, chosenRoad.transform);
-            carInstance.transform.localPosition = new Vector3(0, 0.5f, 0);
-            carInstance.transform.localRotation = Quaternion.identity;
-            carInstance.transform.localScale = new Vector3(100f, 100f, 100f);
-        }
-    }
-
-    GameObject GetRandomSafeRoad()
-    {
-        return GetRandomPrefab(carreterasSeguras);
-    }
-
-    GameObject GetRandomBadRoad()
-    {
-        return GetRandomPrefab(carreteras);
-    }
-
-    bool IsBadRoad(GameObject roadPrefab)
-    {
-        if (carreteras == null || roadPrefab == null) return false;
-        foreach (var badRoad in carreteras)
-        {
-            if (badRoad != null && roadPrefab.name.Contains(badRoad.name))
-                return true;
-        }
-        return false;
-    }
-
-    LevelConfig GetCurrentLevelConfig()
-    {
-        foreach (var config in levelConfigs)
-        {
-            if (config.level == currentLevel)
-                return config;
-        }
-
-        float progress = Mathf.Clamp01((float)(currentLevel - 1) / (maxLevel - 1));
-        return new LevelConfig
-        {
-            level = currentLevel,
-            minGoodRoads = Mathf.Max(1, 3 - Mathf.FloorToInt(progress * 2)),
-            maxGoodRoads = 3 - Mathf.FloorToInt(progress * 1),
-            badRoadChance = progress
-        };
-    }
-
-    void ShuffleList<T>(List<T> list)
-    {
-        for (int i = 0; i < list.Count; i++)
-        {
-            T temp = list[i];
-            int randomIndex = Random.Range(i, list.Count);
-            list[i] = list[randomIndex];
-            list[randomIndex] = temp;
-        }
-    }
-
-    void UpdateScore(int currentSegment)
-    {
-        if (Time.time - lastScoreUpdateTime < scoreUpdateInterval)
-            return;
-
-        lastScoreUpdateTime = Time.time;
-
-        if (currentSegment > highestSegmentReached)
-        {
-            int segmentsGained = currentSegment - highestSegmentReached;
-            currentScore += segmentsGained * pointsPerSegment;
-            highestSegmentReached = currentSegment;
-            UpdateScoreDisplay();
-        }
-    }
-
-    void CheckLevelUp()
-    {
-        if (currentScore >= nextLevelThreshold && currentLevel < maxLevel)
-        {
-            currentLevel++;
-            nextLevelThreshold = currentLevel * pointsPerLevel;
-
-            float progress = Mathf.Clamp01((float)(currentLevel - 1) / (maxLevel - 1));
-            currentSpeedMultiplier = 1f + (difficultyCurve.Evaluate(progress) * (speedMultiplierPerLevel - 1f));
-
-            UpdateLevelDisplay();
-
-            Debug.Log($"¡NIVEL {currentLevel} ALCANZADO!");
-        }
-    }
-
-    void InitializeUI()
-    {
-        if (scoreText == null)
-            scoreText = GameObject.Find("ScoreText")?.GetComponent<Text>();
-
-        if (levelText == null)
-        {
-            levelText = GameObject.Find("LevelText")?.GetComponent<Text>();
-            if (levelText == null && scoreText != null)
-            {
-                GameObject levelObj = new GameObject("LevelText");
-                levelObj.transform.SetParent(scoreText.transform.parent);
-                levelText = levelObj.AddComponent<Text>();
-                levelText.font = scoreText.font;
-                levelText.fontSize = 24;
-                levelText.alignment = TextAnchor.UpperLeft;
-                levelText.color = Color.yellow;
-
-                RectTransform rect = levelText.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0, 1);
-                rect.anchorMax = new Vector2(0, 1);
-                rect.pivot = new Vector2(0, 1);
-                rect.anchoredPosition = new Vector2(20, -80);
-                rect.sizeDelta = new Vector2(300, 40);
-
-                Shadow shadow = levelObj.AddComponent<Shadow>();
-                shadow.effectColor = Color.black;
-                shadow.effectDistance = new Vector2(2, -2);
-            }
-        }
-
-        UpdateScoreDisplay();
-        UpdateLevelDisplay();
-    }
-
-    void UpdateScoreDisplay()
-    {
-        if (scoreText != null)
-        {
-            scoreText.text = $"Puntuación: {currentScore:N0}";
-            float progress = (float)currentScore / nextLevelThreshold;
-            scoreText.color = Color.Lerp(Color.white, Color.yellow, progress);
-        }
-    }
-
-    void UpdateLevelDisplay()
-    {
-        if (levelText != null)
-        {
-            levelText.text = $"Nivel: {currentLevel}\nSiguiente: {nextLevelThreshold:N0} pts";
-            levelText.color = currentLevel >= 5 ? Color.red :
-                             currentLevel >= 3 ? Color.yellow : Color.green;
-        }
-    }
-
-    // Métodos del segundo código para fallback y colisiones
     void GenerateEdificio(Transform parent, int laneIndex, GameObject[] prefabs)
     {
         Vector3 position = new Vector3(carrilPositions[laneIndex], 0, parent.position.z);
@@ -556,6 +168,133 @@ public class ProceduralGenerator : MonoBehaviour
             fallbackSidewalkColor,
             "SidewalkFallback");
         EnsureCollider(instance, sidewalkMaterial);
+    }
+
+    void GenerateRoads(Transform parent, int segmentIndex)
+    {
+        List<GameObject> roadsToPlace = new List<GameObject>();
+
+        // 1. Garantizar al menos una carretera segura
+        GameObject safeRoad = GetRandomPrefab(carreterasSeguras);
+        roadsToPlace.Add(safeRoad);
+
+        // 2. Garantizar carretera_4
+        GameObject carretera4 = null;
+        if (carreteras != null && carreteras.Length > 0)
+        {
+            carretera4 = System.Array.Find(carreteras, road => road != null && road.name.Contains("carretera_4"));
+            if (carretera4 == null)
+            {
+                carretera4 = GetRandomPrefab(carreteras);
+            }
+        }
+        roadsToPlace.Add(carretera4);
+
+        // 3. Tercera carretera aleatoria
+        GameObject thirdRoad = GetRandomCombined(carreteras, carreterasSeguras);
+        roadsToPlace.Add(thirdRoad);
+
+        // 4. Mezclar aleatoriamente
+        for (int i = 0; i < roadsToPlace.Count; i++)
+        {
+            GameObject temp = roadsToPlace[i];
+            int randomIndex = UnityEngine.Random.Range(i, roadsToPlace.Count);
+            roadsToPlace[i] = roadsToPlace[randomIndex];
+            roadsToPlace[randomIndex] = temp;
+        }
+
+        // 5. Instanciar en las posiciones
+        List<GameObject> instantiatedRoads = new List<GameObject>();
+
+        for (int i = 0; i < 3; i++)
+        {
+            Vector3 position = new Vector3(carrilPositions[3 + i], 0, parent.position.z);
+            GameObject prefab = roadsToPlace[i];
+
+            GameObject instance;
+            if (prefab != null)
+                instance = Instantiate(prefab, position, Quaternion.identity, parent);
+            else
+                instance = CreatePrimitiveFallback(
+                    PrimitiveType.Cube,
+                    fallbackRoadScale,
+                    fallbackRoadColor,
+                    "RoadFallback",
+                    parent,
+                    position,
+                    Quaternion.identity);
+
+            instantiatedRoads.Add(instance);
+            EnsureCollider(instance, roadMaterial);
+        }
+        // ======================
+        // REGLA DE LOS COCHES
+        // ======================
+
+        // Filtrar cuáles de las 3 carreteras instanciadas son seguras
+        List<GameObject> safeRoadsInSegment = new List<GameObject>();
+
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject prefab = roadsToPlace[i];
+            GameObject instance = instantiatedRoads[i];
+
+            if (prefab != null && System.Array.Exists(carreterasSeguras, safe => safe == prefab))
+                safeRoadsInSegment.Add(instance);
+        }
+
+
+
+        // Si hay exactamente 2 carreteras seguras → colocar coche en UNA sola
+        if (safeRoadsInSegment.Count == 2)
+        {
+            GameObject chosenRoad = safeRoadsInSegment[Random.Range(0, safeRoadsInSegment.Count)];
+
+            Vector3 carPos = chosenRoad.transform.position + new Vector3(0, 0.66f, 0);
+            Debug.Log("Coche colocado en: " + carPos + " en carretera: " + chosenRoad.name);
+
+            GameObject instance = Instantiate(prefabCoche, chosenRoad.transform);
+            instance.transform.localPosition = new Vector3(0, 0.5f, 0); // relativa a la carretera
+            instance.transform.localRotation = Quaternion.identity;
+            instance.transform.localScale = new Vector3(100f,100f,100f);
+
+        }
+
+
+    }
+
+    // M�todo para depuraci�n: muestra los segmentos actuales
+    void DebugSegments()
+    {
+        string debugInfo = $"Segmentos activos: {segments.Count}\n";
+        foreach (var segment in segments)
+        {
+            if (segment != null)
+            {
+                debugInfo += $"- {segment.name} at Z: {segment.transform.position.z}\n";
+            }
+        }
+        Debug.Log(debugInfo);
+    }
+
+    public void SetSpawnDistance(float distance)
+    {
+        spawnDistance = distance;
+    }
+
+    public void SetDestroyDistance(float distance)
+    {
+        destroyDistance = distance;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        for (int i = 0; i < carrilPositions.Length; i++)
+        {
+            Vector3 pos = new Vector3(carrilPositions[i], 0, 0);
+            Gizmos.DrawWireCube(pos, new Vector3(4f, 1f, 1f));
+        }
     }
 
     private GameObject SpawnPrefabOrPrimitive(
@@ -600,6 +339,25 @@ public class ProceduralGenerator : MonoBehaviour
             return null;
 
         return prefabs[Random.Range(0, prefabs.Length)];
+    }
+
+    private GameObject GetRandomCombined(GameObject[] a, GameObject[] b)
+    {
+        int countA = a?.Length ?? 0;
+        int countB = b?.Length ?? 0;
+        int total = countA + countB;
+        if (total == 0)
+            return null;
+
+        int index = Random.Range(0, total);
+        if (index < countA)
+        {
+            return a[index];
+        }
+        else
+        {
+            return b[index - countA];
+        }
     }
 
     private GameObject CreatePrimitiveFallback(
@@ -706,96 +464,5 @@ public class ProceduralGenerator : MonoBehaviour
         {
             col.sharedMaterial = material;
         }
-    }
-
-    // ========== MÉTODOS PÚBLICOS (del primer código) ==========
-    public void SetSpawnDistance(float distance)
-    {
-        spawnDistance = Mathf.Clamp(distance, 50f, 500f);
-        Debug.Log($"Spawn Distance actualizado: {spawnDistance}");
-    }
-
-    public void SetDestroyDistance(float distance)
-    {
-        destroyDistance = Mathf.Clamp(distance, 30f, 250f);
-        Debug.Log($"Destroy Distance actualizado: {destroyDistance}");
-    }
-
-    public float GetCurrentSpeedMultiplier()
-    {
-        return currentSpeedMultiplier;
-    }
-
-    public void AddPoints(int points)
-    {
-        currentScore += points;
-        UpdateScoreDisplay();
-        CheckLevelUp();
-    }
-
-    public int GetCurrentScore() => currentScore;
-
-    public int GetCurrentLevel() => currentLevel;
-
-    public float GetCurrentDifficulty() => (float)(currentLevel - 1) / (maxLevel - 1);
-
-    public int GetNextLevelPoints() => nextLevelThreshold - currentScore;
-
-    public void ResetScore()
-    {
-        currentScore = 0;
-        highestSegmentReached = 0;
-        currentLevel = 1;
-        nextLevelThreshold = pointsPerLevel;
-        currentSpeedMultiplier = 1f;
-        goodRoadsCount = 0;
-        badRoadsCount = 0;
-        UpdateScoreDisplay();
-        UpdateLevelDisplay();
-        Debug.Log("Puntuación reseteada");
-    }
-
-    public float GetDistanceTraveled() => highestSegmentReached * segmentLength;
-
-    public int GetActiveSegmentCount() => segments.Count;
-
-    public float GetSegmentLength() => segmentLength;
-
-    public List<GameObject> GetActiveSegments() => new List<GameObject>(segments);
-
-    // ========== DEBUG Y GIZMOS ==========
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        for (int i = 0; i < carrilPositions.Length; i++)
-        {
-            Vector3 pos = new Vector3(carrilPositions[i], 0, 0);
-            Gizmos.DrawWireCube(pos, new Vector3(4f, 1f, 1f));
-        }
-    }
-
-    void OnGUI()
-    {
-        if (!string.IsNullOrEmpty(debugInfo))
-        {
-            GUIStyle style = new GUIStyle(GUI.skin.box);
-            style.fontSize = 12;
-            style.normal.textColor = Color.green;
-            style.alignment = TextAnchor.UpperLeft;
-            style.padding = new RectOffset(10, 10, 10, 10);
-
-            GUI.Box(new Rect(10, 100, 400, 250), debugInfo, style);
-        }
-
-        // Info básica
-        GUIStyle basicStyle = new GUIStyle(GUI.skin.label);
-        basicStyle.fontSize = 16;
-        basicStyle.normal.textColor = Color.yellow;
-
-        string basicInfo = $"Puntuación: {currentScore}\n";
-        basicInfo += $"Nivel: {currentLevel}\n";
-        basicInfo += $"Multiplicador: {currentSpeedMultiplier:F2}x";
-
-        GUI.Label(new Rect(10, 10, 200, 80), basicInfo, basicStyle);
     }
 }

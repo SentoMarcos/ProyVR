@@ -5,13 +5,17 @@ fetchPreview = true
 defaultFlags = 0
 keepOpen = true
 queryFolder = "Assets"
-onBoardingDoNotAskAgain = false
+onBoardingDoNotAskAgain = true
 showPackageIndexes = false
 showStatusBar = false
 scopes = {
-	"picker_window_position_offset.00000000" = "91,33337;395,3333;320;550"
+<<<<<<< HEAD
+	"picker_window_position_offset.00000000" = "-1173,6;-48,8;1521,6;826,4"
+=======
+	"picker_window_position_offset.00000000" = "49,59998;179,2;320;550,4"
+>>>>>>> origin/sento
 	"picker_visibility_flags.00000000" = "0"
-	"picker_item_size.00000000" = "1"
+	"picker_item_size.00000000" = "32"
 	"picker_inspector.00000000" = "0"
 }
 providers = {
@@ -69,6 +73,12 @@ providers = {
 objectSelectors = {
 }
 recentSearches = [
+	"select "
+	"ui press value"
+	"ui pre"
+	"select va"
+	"left interaction ui"
+	"left int"
 ]
 searchItemFavorites = [
 ]

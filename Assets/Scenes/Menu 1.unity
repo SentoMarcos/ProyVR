@@ -179,8 +179,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Gira la cabeza para ver los men\xFAs"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 947eacfab61aa1441948ab2d433c09aa, type: 2}
+  m_sharedMaterial: {fileID: -1364556487403173722, guid: 947eacfab61aa1441948ab2d433c09aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2225,12 +2225,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 318641042}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.30487, y: -1.6177399, z: 13.434999}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.25, y: 0.5, z: 16.48}
   m_LocalScale: {x: 1, y: 1, z: 142.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1812867203}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &322863550
 GameObject:
@@ -5420,12 +5420,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 811565817}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.05487, y: -2.11774, z: 13.434999}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 16.48}
   m_LocalScale: {x: 1.15, y: 2.1314, z: 14.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1812867203}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &811895615
 GameObject:
@@ -6063,8 +6063,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Configuraci\xF3n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 947eacfab61aa1441948ab2d433c09aa, type: 2}
+  m_sharedMaterial: {fileID: -1364556487403173722, guid: 947eacfab61aa1441948ab2d433c09aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6354,8 +6354,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Audio
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 947eacfab61aa1441948ab2d433c09aa, type: 2}
+  m_sharedMaterial: {fileID: -1364556487403173722, guid: 947eacfab61aa1441948ab2d433c09aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -7440,8 +7440,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: LeaderBoard
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 947eacfab61aa1441948ab2d433c09aa, type: 2}
+  m_sharedMaterial: {fileID: -1364556487403173722, guid: 947eacfab61aa1441948ab2d433c09aa, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -9043,12 +9043,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1451761497}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.20713, y: -1.6177399, z: 13.434999}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.262, y: 0.5, z: 16.48}
   m_LocalScale: {x: 1, y: 1, z: 142.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1812867203}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1453691346
 GameObject:
@@ -11215,40 +11215,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1812115835}
   m_CullTransparentMesh: 1
---- !u!1 &1812867202
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1812867203}
-  m_Layer: 0
-  m_Name: Barreras
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1812867203
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1812867202}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05487, y: 2.11774, z: 3.045}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 811565821}
-  - {fileID: 1451761501}
-  - {fileID: 318641046}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1865793810
 GameObject:
   m_ObjectHideFlags: 0
@@ -12666,7 +12632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicReactiveLights
   audioSource: {fileID: 148728809}
-  sensitivity: 20
+  sensitivity: 12
   threshold: 15
   bassSamples: 16
   baseColor: {r: 0, g: 1, b: 0.18008995, a: 1}
@@ -15540,7 +15506,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2c5ab9a88e87c5642ac36413124dc9c2, type: 2}
+  - {fileID: 7497263593780825561, guid: 773b7a18db2809844b15cb97477bee84, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -15682,7 +15648,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2c5ab9a88e87c5642ac36413124dc9c2, type: 2}
+  - {fileID: 7497263593780825561, guid: 773b7a18db2809844b15cb97477bee84, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -16051,7 +16017,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2c5ab9a88e87c5642ac36413124dc9c2, type: 2}
+  - {fileID: 7497263593780825561, guid: 773b7a18db2809844b15cb97477bee84, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -16283,7 +16249,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4033530628020176714}
-  - component: {fileID: 4373604439752007153}
   m_Layer: 0
   m_Name: menu-estructura
   m_TagString: Untagged
@@ -16291,27 +16256,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!65 &4373604439752007153
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4373604439752007152}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 8.89, y: 2.61, z: 2.15}
-  m_Center: {x: -3.37, y: 1.27, z: 0}
 --- !u!33 &4404026735728442454
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -16912,7 +16856,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicReactiveLights
   audioSource: {fileID: 148728809}
-  sensitivity: 20
+  sensitivity: 12
   threshold: 15
   bassSamples: 16
   baseColor: {r: 0, g: 1, b: 0.18039216, a: 1}
@@ -17088,7 +17032,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2c5ab9a88e87c5642ac36413124dc9c2, type: 2}
+  - {fileID: 7497263593780825561, guid: 773b7a18db2809844b15cb97477bee84, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -20228,7 +20172,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -20865,9 +20809,11 @@ SceneRoots:
   - {fileID: 148728808}
   - {fileID: 98323569}
   - {fileID: 867090816}
+  - {fileID: 811565821}
   - {fileID: 787841174}
+  - {fileID: 1451761501}
+  - {fileID: 318641046}
   - {fileID: 1174928036}
   - {fileID: 1267798516}
   - {fileID: 224856892}
   - {fileID: 77881494}
-  - {fileID: 1812867203}

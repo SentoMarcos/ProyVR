@@ -3,6 +3,9 @@ using UnityEngine;
 public class FreezeOnTrigger : MonoBehaviour
 {
     public string freezeZoneTag;   // "LeftFreezeZone" o "RightFreezeZone"
+    
+    public TutorialManager tutorialManager;
+    public bool isLeftHand;
 
     private bool frozen = false;
     private Vector3 frozenPosition;
@@ -31,6 +34,15 @@ public class FreezeOnTrigger : MonoBehaviour
             frozenRotation = transform.rotation;
 
             Debug.Log($"[{gameObject.name}] Se ha congelado el mando");
+
+            if (tutorialManager != null)
+            {
+                if (isLeftHand)
+                    tutorialManager.leftHandInZone = true;
+                else
+                    tutorialManager.rightHandInZone = true;
+            }
+
         }
         else
         {

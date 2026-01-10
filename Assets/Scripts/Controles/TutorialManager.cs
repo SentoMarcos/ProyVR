@@ -30,6 +30,20 @@ public class TutorialManager : MonoBehaviour
     public InputActionProperty rightAcceleration;
 
     [Header("Detection")]
+    [Tooltip("Referencia al transform de la mano izquierda (controlador)")]
+    public Transform leftHand;
+    [Tooltip("Referencia al transform de la mano derecha (controlador)")]
+    public Transform rightHand;
+
+    [Tooltip("Collider (trigger) que define la zona del manillar izquierdo")]
+    public Collider leftHandlebarZone;
+    [Tooltip("Collider (trigger) que define la zona del manillar derecho")]
+    public Collider rightHandlebarZone;
+
+    [Tooltip("Distancia mxima para considerar la mano dentro de la zona")] 
+    [Range(0.01f, 0.5f)] public float handlebarRadius = 0.1f;
+
+    [Header("Estado (solo lectura)")]
     public bool leftHandInZone;
     public bool rightHandInZone;
 
@@ -42,6 +56,8 @@ public class TutorialManager : MonoBehaviour
 
     void Update()
     {
+        UpdateHandZones();
+
         switch (currentStep)
         {
             case TutorialStep.MoveHandsToHandlebar:
@@ -99,10 +115,25 @@ public class TutorialManager : MonoBehaviour
                 break;
 
             case TutorialStep.Done:
-                tutorialText.text = "¡Ahora a jugar!";
+                tutorialText.text = "ï¿½Ahora a jugar!";
                 tutorialImage.gameObject.SetActive(false);
                 break;
         }
+    }
+
+    private void UpdateHandZones()
+    {
+        leftHandInZone = IsHandInZone(leftHand, leftHandlebarZone);
+        rightHandInZone = IsHandInZone(rightHand, rightHandlebarZone);
+    }
+
+    private bool IsHandInZone(Transform hand, Collider zone)
+    {
+        if (hand == null || zone == null) return false;
+
+        Vector3 closest = zone.ClosestPoint(hand.position);
+        float dist = Vector3.Distance(hand.position, closest);
+        return dist <= handlebarRadius;
     }
 
 }

@@ -14,6 +14,7 @@ public class ProceduralGenerator : MonoBehaviour
     public GameObject[] carreteras;
     public GameObject[] carreterasSeguras;
     public GameObject prefabCoche;
+    public Transform centerPoint;
 
     [Header("Colisionadores automáticos")]
     public bool autoGenerateColliders = true;
@@ -203,6 +204,16 @@ public class ProceduralGenerator : MonoBehaviour
             roadsToPlace[randomIndex] = temp;
         }
 
+        // ======================
+        // Forzar carretera del medio en segmento 0 y 1
+        // ======================
+        if ((segmentIndex == 0 || segmentIndex == 1) && carreteras != null && carreteras.Length > 0)
+        {
+            // El carril medio es i=1 (posición central de los 3 carreteras)
+            // En tu esquema, carriles 3,4,5 → índices 0,1,2
+            roadsToPlace[1] = carreteras[0];
+        }
+
         // 5. Instanciar en las posiciones
         List<GameObject> instantiatedRoads = new List<GameObject>();
 
@@ -256,7 +267,7 @@ public class ProceduralGenerator : MonoBehaviour
             GameObject instance = Instantiate(prefabCoche, chosenRoad.transform);
             instance.transform.localPosition = new Vector3(0, 0.5f, 0); // relativa a la carretera
             instance.transform.localRotation = Quaternion.identity;
-            instance.transform.localScale = new Vector3(100f,100f,100f);
+            //instance.transform.localScale = new Vector3(100f,100f,100f);
 
         }
 

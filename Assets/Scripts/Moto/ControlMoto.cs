@@ -4,43 +4,53 @@ using UnityEngine.XR.Content.Interaction;
 public class ControlMoto : MonoBehaviour
 {
     public XRKnob acelerador;
-    public Transform camaraVR; // Arrastra la Main Camera aquí
+    public Transform camaraVR;
+    public Transform modeloVisual; // Arrastra aquí el objeto "DEF-Body"
+    
     public float velocidadMaxima = 10f;
     
     [Header("Configuración de Giro")]
-    public float sensibilidadGiro = 40f;   // Qué tanto gira la moto
-    public float maximaInclinacion = 25f; // Qué tanto se inclina visualmente
-    public float suavizado = 5f;          // Suavidad del movimiento
+    public float sensibilidadGiro = 40f;   
+    public float maximaInclinacionVisual = 30f; 
+    public float suavizadoInclinacion = 5f;
+
+    private float inclinacionActual = 0f;
 
     void Update()
     {
         float potencia = acelerador.value;
 
-        // 1. MOVIMIENTO (Tu código corregido)
         if (potencia > 0.05f)
         {
+            // 1. MOVIMIENTO LÓGICO (El padre avanza y gira sobre el suelo)
             transform.Translate(-Vector3.up * potencia * velocidadMaxima * Time.deltaTime);
             
-            // 2. DETECCIÓN DE INCLINACIÓN DE CABEZA
-            // Obtenemos la rotación Z de la cámara (rango -180 a 180)
             float inclinacionCabeza = camaraVR.localEulerAngles.z;
             if (inclinacionCabeza > 180) inclinacionCabeza -= 360;
 
-            // Invertimos el valor para que sea intuitivo (inclinar derecha -> girar derecha)
-            // Usamos un valor negativo porque suele venir invertido en el eje Z de la cámara
-            float factorGiro = -inclinacionCabeza / 45f; // Normalizado
+            float factorGiro = -inclinacionCabeza / 45f; 
             factorGiro = Mathf.Clamp(factorGiro, -1f, 1f);
 
-            // 3. GIRAR LA MOTO (Eje Y)
-            // Solo giramos si estamos en movimiento
-            float rotacionY = factorGiro * sensibilidadGiro * Time.deltaTime;
-            transform.Rotate(0, 0, rotacionY); // Nota: Si tu moto está rotada -90 en X, 
-                                               // quizás debas cambiar esto a (rotacionY, 0, 0)
+            // Giro horizontal (sobre el eje Z del padre debido a la rotación -90)
+            transform.Rotate(0, 0, factorGiro * sensibilidadGiro * Time.deltaTime);
 
-            // 4. INCLINACIÓN VISUAL (Eje Z o X según tu modelo)
-            // Esto es para que la moto se "tumbe" en las curvas
-            // Creamos una rotación de inclinación basada en el factor de giro
-            // Ajusta los ejes según la orientación de tu modelo (actualmente -90,0,0)
+            // 2. INCLINACIÓN VISUAL (Solo al objeto visual)
+            float inclinacionDeseada = factorGiro * maximaInclinacionVisual;
+            inclinacionActual = Mathf.Lerp(inclinacionActual, inclinacionDeseada, Time.deltaTime * suavizadoInclinacion);
+
+            if (modeloVisual != null)
+            {
+                // Aplicamos la inclinación lateral al modelo visual
+                // En tu modelo, al ser hijo de un objeto a -90, el eje de "tumbado" suele ser el Y local
+                modeloVisual.localEulerAngles = new Vector3(0f, inclinacionActual, 0f);
+            }
+        }
+        else
+        {
+            // Enderezar suavemente al frenar
+            inclinacionActual = Mathf.Lerp(inclinacionActual, 0, Time.deltaTime * suavizadoInclinacion);
+            if (modeloVisual != null)
+                modeloVisual.localEulerAngles = new Vector3(0f, inclinacionActual, 0f);
         }
     }
 }

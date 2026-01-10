@@ -1,56 +1,76 @@
 using UnityEngine;
+using UnityEngine.InputSystem; // Necesario para el gatillo
 using UnityEngine.XR.Content.Interaction;
 
 public class ControlMoto : MonoBehaviour
 {
-    public XRKnob acelerador;
+    [Header("Controles")]
+    public XRKnob acelerador; // Puño derecho
+    public InputActionProperty frenoAction; // Gatillo izquierdo
     public Transform camaraVR;
-    public Transform modeloVisual; // Arrastra aquí el objeto "DEF-Body"
+    public Transform modeloVisual; 
     
-    public float velocidadMaxima = 10f;
+    [Header("Ajustes de Movimiento")]
+    public float velocidadMaxima = 15f;
+    public float fuerzaFrenado = 8f; // El freno de gatillo suele ser más seco
     
-    [Header("Configuración de Giro")]
+    [Header("Ajustes de Giro")]
     public float sensibilidadGiro = 40f;   
-    public float maximaInclinacionVisual = 30f; 
+    public float maximaInclinacionVisual = 25f; 
     public float suavizadoInclinacion = 5f;
 
+    private float velocidadActual = 0f;
     private float inclinacionActual = 0f;
 
     void Update()
     {
-        float potencia = acelerador.value;
+        // 1. LEER INPUTS
+        float valorAcelerador = acelerador != null ? acelerador.value : 0f;
+        
+        // Leemos el valor del gatillo (va de 0.0 a 1.0)
+        float valorFreno = frenoAction.action.ReadValue<float>();
 
-        if (potencia > 0.05f)
+        // 2. LÓGICA DE VELOCIDAD
+        if (valorFreno > 0.1f) // Prioridad al freno
         {
-            // 1. MOVIMIENTO LÓGICO (El padre avanza y gira sobre el suelo)
-            transform.Translate(-Vector3.up * potencia * velocidadMaxima * Time.deltaTime);
-            
-            float inclinacionCabeza = camaraVR.localEulerAngles.z;
-            if (inclinacionCabeza > 180) inclinacionCabeza -= 360;
-
-            float factorGiro = -inclinacionCabeza / 45f; 
-            factorGiro = Mathf.Clamp(factorGiro, -1f, 1f);
-
-            // Giro horizontal (sobre el eje Z del padre debido a la rotación -90)
-            transform.Rotate(0, 0, factorGiro * sensibilidadGiro * Time.deltaTime);
-
-            // 2. INCLINACIÓN VISUAL (Solo al objeto visual)
-            float inclinacionDeseada = factorGiro * maximaInclinacionVisual;
-            inclinacionActual = Mathf.Lerp(inclinacionActual, inclinacionDeseada, Time.deltaTime * suavizadoInclinacion);
-
-            if (modeloVisual != null)
-            {
-                // Aplicamos la inclinación lateral al modelo visual
-                // En tu modelo, al ser hijo de un objeto a -90, el eje de "tumbado" suele ser el Y local
-                modeloVisual.localEulerAngles = new Vector3(0f, inclinacionActual, 0f);
-            }
+            // Frenado progresivo según cuánto aprietes el gatillo
+            velocidadActual = Mathf.Lerp(velocidadActual, 0, Time.deltaTime * fuerzaFrenado * valorFreno);
+        }
+        else if (valorAcelerador > 0.05f)
+        {
+            // Aceleración normal
+            velocidadActual = Mathf.Lerp(velocidadActual, valorAcelerador * velocidadMaxima, Time.deltaTime);
         }
         else
         {
-            // Enderezar suavemente al frenar
+            // Rozamiento natural (se para sola poco a poco)
+            velocidadActual = Mathf.Lerp(velocidadActual, 0, Time.deltaTime * 0.5f);
+        }
+
+        // 3. MOVIMIENTO Y GIRO (Tu lógica corregida)
+        if (velocidadActual > 0.1f)
+        {
+            transform.Translate(-Vector3.up * velocidadActual * Time.deltaTime);
+            
+            float zRot = camaraVR.localEulerAngles.z;
+            if (zRot > 180) zRot -= 360;
+
+            float factorGiro = -Mathf.Clamp(zRot / 30f, -1f, 1f);
+            transform.Rotate(0, 0, factorGiro * sensibilidadGiro * Time.deltaTime);
+
+            // 4. INCLINACIÓN VISUAL
+            float inclinacionDeseada = factorGiro * maximaInclinacionVisual;
+            inclinacionActual = Mathf.Lerp(inclinacionActual, inclinacionDeseada, Time.deltaTime * suavizadoInclinacion);
+        }
+        else
+        {
             inclinacionActual = Mathf.Lerp(inclinacionActual, 0, Time.deltaTime * suavizadoInclinacion);
-            if (modeloVisual != null)
-                modeloVisual.localEulerAngles = new Vector3(0f, inclinacionActual, 0f);
+        }
+
+        // Aplicar rotación al modelo visual (DEF-Body)
+        if (modeloVisual != null)
+        {
+            modeloVisual.localEulerAngles = new Vector3(0f, inclinacionActual, 0f);
         }
     }
 }

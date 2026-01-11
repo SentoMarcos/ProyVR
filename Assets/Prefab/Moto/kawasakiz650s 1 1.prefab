@@ -47,7 +47,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7558063796984267649
 Transform:
   m_ObjectHideFlags: 0
@@ -230,7 +230,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3009556709428966010
 Transform:
   m_ObjectHideFlags: 0
@@ -1496,6 +1496,8 @@ GameObject:
   - component: {fileID: 4794633173514211615}
   - component: {fileID: 3179587375707856050}
   - component: {fileID: 3516594584664071563}
+  - component: {fileID: 1590409944448275283}
+  - component: {fileID: 2991771300374344993}
   m_Layer: 0
   m_Name: kawasakiz650s 1 1
   m_TagString: Untagged
@@ -1591,6 +1593,54 @@ MonoBehaviour:
   sensibilidadGiro: 40
   maximaInclinacionVisual: 25
   suavizadoInclinacion: 5
+--- !u!54 &1590409944448275283
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3654424755122917007}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!65 &2991771300374344993
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3654424755122917007}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 0.0069285003, y: 0.048198216, z: 0.020276247}
+  m_Center: {x: 0.00086561014, y: 0.019977206, z: 0.020008713}
 --- !u!1 &3657455886769129756
 GameObject:
   m_ObjectHideFlags: 0
@@ -1954,7 +2004,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.5170414, y: -0.4868826, z: 0.4830272, w: 0.51215065}
   m_LocalPosition: {x: -0.0053921225, y: -0.010453052, z: 0.01015275}
-  m_LocalScale: {x: 0.022222226, y: 0.022222226, z: 0.02222222}
+  m_LocalScale: {x: 0.027142884, y: 0.026506586, z: 0.027889399}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6503392952303326502}
@@ -3083,15 +3133,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6409849612048651613}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.13247018, y: -0.011857884, z: -0.69396824, w: 0.70761514}
-  m_LocalPosition: {x: 1.19, y: 0, z: 0.25}
+  m_LocalRotation: {x: -0.17880653, y: 0.24064684, z: -0.6474454, w: 0.7006653}
+  m_LocalPosition: {x: 0.51, y: 0, z: -0.41}
   m_LocalScale: {x: 7.8, y: 19.59, z: 11.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5991846827650810550}
   - {fileID: 3670726136714278104}
   m_Father: {fileID: 7429903131609571117}
-  m_LocalEulerAnglesHint: {x: 9.847, y: 348.25, z: 270.1}
+  m_LocalEulerAnglesHint: {x: 3.5, y: 394.738, z: 275.616}
 --- !u!95 &3938174157838311475
 Animator:
   serializedVersion: 7
@@ -3419,7 +3469,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5418983271590300786
 Transform:
   m_ObjectHideFlags: 0
@@ -3644,15 +3694,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7330623805692540578}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.011183213, y: -0.12227978, z: -0.75788623, w: 0.64072704}
-  m_LocalPosition: {x: 0.86, y: -0.121, z: 0.01}
-  m_LocalScale: {x: 10.100002, y: 11.700005, z: 9.500001}
+  m_LocalRotation: {x: -0.09552168, y: 0.07744622, z: -0.7493669, w: 0.6506359}
+  m_LocalPosition: {x: 0.55, y: -0.023, z: -0.09}
+  m_LocalScale: {x: 6.973748, y: 17.028297, z: 11.946252}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8695799530537258823}
   - {fileID: 6633088245636449001}
   m_Father: {fileID: 6503392952303326502}
-  m_LocalEulerAnglesHint: {x: -9.847, y: 349.849, z: 261.3}
+  m_LocalEulerAnglesHint: {x: -0.471, y: 374.12, z: 261.874}
 --- !u!95 &8352777089178830904
 Animator:
   serializedVersion: 7

@@ -11,6 +11,9 @@ public class StartButtonHandler : MonoBehaviour, IPointerClickHandler
     public Transform truck; // Asigna el camión aquí
     public Transform groundPlane; // Asigna el plane del camión aquí
     public float distanceForward = -50f; // distancia donde aparecerá la otra escena
+    public GameObject[] objectsToActivate; // Asigna DEF-Body, DEF-Wheel.Bk, Root
+    public GameObject truckRootToDisable; // Asigna aquí el GO raíz del camión
+    public Rigidbody[] rigidbodiesToEnableGravity; // Activa gravedad al pulsar
 
 
     public void OnPointerClick(PointerEventData eventData)
@@ -22,6 +25,43 @@ public class StartButtonHandler : MonoBehaviour, IPointerClickHandler
             uiContainer.SetActive(false);
         else
             Debug.Log("UIContainer ES NULL");
+
+        // Desactivar camión completo
+        if (truckRootToDisable != null)
+            truckRootToDisable.SetActive(false);
+        else
+            Debug.Log("truckRootToDisable ES NULL");
+
+        // Activar objetos solicitados
+        if (objectsToActivate != null && objectsToActivate.Length > 0)
+        {
+            foreach (var obj in objectsToActivate)
+            {
+                if (obj != null)
+                    obj.SetActive(true);
+            }
+        }
+        else
+        {
+            Debug.Log("No hay objetos asignados para activar");
+        }
+
+        // Activar gravedad en los rigidbodies asignados
+        if (rigidbodiesToEnableGravity != null && rigidbodiesToEnableGravity.Length > 0)
+        {
+            foreach (var rb in rigidbodiesToEnableGravity)
+            {
+                if (rb != null)
+                {
+                    rb.isKinematic = false;
+                    rb.useGravity = true;
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("No hay rigidbodies asignados para activar gravedad");
+        }
 
         // Ejecutar animación
         if (targetAnimator != null)

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
 
@@ -11,6 +12,7 @@ public class TutorialManager : MonoBehaviour
         GrabHandlebar,
         Brake,
         Accelerate,
+        TiltHead,
         Done
     }
 
@@ -29,6 +31,12 @@ public class TutorialManager : MonoBehaviour
     public InputActionProperty leftTrigger;
     public InputActionProperty rightAcceleration;
 
+    [Header("Cabeza")]
+    [Tooltip("Transform de la cabeza/cámara para detectar ladeo")]
+    public Transform headTransform;
+    [Tooltip("Grados de ladeo necesarios (roll) para pasar el paso de giro")]
+    [Range(5f, 45f)] public float headTiltThresholdDegrees = 12f;
+
     [Header("Detection")]
     [Tooltip("Referencia al transform de la mano izquierda (controlador)")]
     public Transform leftHand;
@@ -40,18 +48,46 @@ public class TutorialManager : MonoBehaviour
     [Tooltip("Collider (trigger) que define la zona del manillar derecho")]
     public Collider rightHandlebarZone;
 
-    [Tooltip("Distancia mxima para considerar la mano dentro de la zona")] 
+    [Tooltip("Distancia máxima para considerar la mano dentro de la zona")] 
     [Range(0.01f, 0.5f)] public float handlebarRadius = 0.1f;
 
     [Header("Estado (solo lectura)")]
     public bool leftHandInZone;
     public bool rightHandInZone;
 
+    [Header("Rotación Aceleración")]
+    [Tooltip("Grados de giro de la mano derecha necesarios para pasar el paso de acelerar")]
+    [Range(5f, 90f)] public float rotationThresholdDegrees = 25f;
+
+    [Header("Cambio de escena")]
+    [Tooltip("Nombre de la escena a cargar al terminar el tutorial")]
+    public string nextSceneName;
+
+    private Quaternion initialHeadRotation;
+    private bool headBaselineCaptured;
+
+    private Quaternion initialRightHandRotation;
+    private bool rotationBaselineCaptured;
+
     private TutorialStep currentStep = TutorialStep.MoveHandsToHandlebar;
 
     void Start()
     {
         UpdateText();
+    }
+
+    void OnEnable()
+    {
+        leftGrip.action?.Enable();
+        leftTrigger.action?.Enable();
+        rightAcceleration.action?.Enable();
+    }
+
+    void OnDisable()
+    {
+        leftGrip.action?.Disable();
+        leftTrigger.action?.Disable();
+        rightAcceleration.action?.Disable();
     }
 
     void Update()
@@ -76,7 +112,16 @@ public class TutorialManager : MonoBehaviour
                 break;
 
             case TutorialStep.Accelerate:
-                if (rightAcceleration.action.ReadValue<float>() > 0.5f)
+                EnsureAccelerationBaseline();
+
+                if (HasRotatedEnough())
+                    NextStep();
+                break;
+
+            case TutorialStep.TiltHead:
+                EnsureHeadBaseline();
+
+                if (HasTiltedHeadEnough())
                     NextStep();
                 break;
         }
@@ -85,7 +130,12 @@ public class TutorialManager : MonoBehaviour
     void NextStep()
     {
         currentStep++;
+        rotationBaselineCaptured = false;
+        headBaselineCaptured = false;
         UpdateText();
+
+        if (currentStep == TutorialStep.Done)
+            LoadNextScene();
     }
     void UpdateText()
     {
@@ -114,8 +164,14 @@ public class TutorialManager : MonoBehaviour
                 tutorialImage.gameObject.SetActive(false);
                 break;
 
+            case TutorialStep.TiltHead:
+                tutorialText.text = "Inclina la cabeza para girar";
+                tutorialImage.gameObject.SetActive(true);
+                tutorialImage.sprite = null; // espacio para imagen futura
+                break;
+
             case TutorialStep.Done:
-                tutorialText.text = "�Ahora a jugar!";
+                tutorialText.text = "¡Ahora a jugar!";
                 tutorialImage.gameObject.SetActive(false);
                 break;
         }
@@ -134,6 +190,126 @@ public class TutorialManager : MonoBehaviour
         Vector3 closest = zone.ClosestPoint(hand.position);
         float dist = Vector3.Distance(hand.position, closest);
         return dist <= handlebarRadius;
+    }
+
+    private void EnsureAccelerationBaseline()
+    {
+        if (rotationBaselineCaptured || currentStep != TutorialStep.Accelerate)
+            return;
+
+        if (TryGetRightHandRotation(out var rotation))
+        {
+            initialRightHandRotation = rotation;
+            rotationBaselineCaptured = true;
+        }
+    }
+
+    private bool HasRotatedEnough()
+    {
+        if (!TryGetRightHandRotation(out var currentRotation))
+            return false;
+
+        if (!rotationBaselineCaptured)
+        {
+            initialRightHandRotation = currentRotation;
+            rotationBaselineCaptured = true;
+            return false;
+        }
+
+        float angle = Quaternion.Angle(initialRightHandRotation, currentRotation);
+        return angle >= rotationThresholdDegrees;
+    }
+
+    private void EnsureHeadBaseline()
+    {
+        if (headBaselineCaptured || currentStep != TutorialStep.TiltHead)
+            return;
+
+        if (TryGetHeadRotation(out var rotation))
+        {
+            initialHeadRotation = rotation;
+            headBaselineCaptured = true;
+        }
+    }
+
+    private bool HasTiltedHeadEnough()
+    {
+        if (!TryGetHeadRotation(out var currentRotation))
+            return false;
+
+        if (!headBaselineCaptured)
+        {
+            initialHeadRotation = currentRotation;
+            headBaselineCaptured = true;
+            return false;
+        }
+
+        float angle = Quaternion.Angle(initialHeadRotation, currentRotation);
+
+        // Solo medir componente de roll (ladeo). Obtenemos delta y convertimos a euler.
+        Quaternion delta = Quaternion.Inverse(initialHeadRotation) * currentRotation;
+        Vector3 deltaEuler = delta.eulerAngles;
+        float roll = Mathf.DeltaAngle(0f, deltaEuler.z);
+
+        return Mathf.Abs(roll) >= headTiltThresholdDegrees && angle >= Mathf.Abs(headTiltThresholdDegrees * 0.5f);
+    }
+
+    private bool TryGetRightHandRotation(out Quaternion rotation)
+    {
+        rotation = Quaternion.identity;
+
+        if (rightAcceleration.action != null)
+        {
+            if (!rightAcceleration.action.enabled)
+                rightAcceleration.action.Enable();
+
+            try
+            {
+                rotation = rightAcceleration.action.ReadValue<Quaternion>();
+                return true;
+            }
+            catch (System.InvalidOperationException)
+            {
+                // El tipo de acción no es de rotación; se intentará con el transform
+            }
+        }
+
+        if (rightHand != null)
+        {
+            rotation = rightHand.rotation;
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool TryGetHeadRotation(out Quaternion rotation)
+    {
+        rotation = Quaternion.identity;
+
+        if (headTransform != null)
+        {
+            rotation = headTransform.rotation;
+            return true;
+        }
+
+        Camera cam = Camera.main;
+        if (cam != null)
+        {
+            rotation = cam.transform.rotation;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void LoadNextScene()
+    {
+        if (string.IsNullOrWhiteSpace(nextSceneName))
+            return;
+
+        if (Application.isPlaying)
+            SceneManager.LoadScene(nextSceneName);
     }
 
 }

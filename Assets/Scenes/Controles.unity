@@ -149,8 +149,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
   tutorialImage: {fileID: 1910911003}
-  gripSprite: {fileID: 21300000, guid: 181595ddecdc6b746ad78200164c216c, type: 3}
-  brakeSprite: {fileID: 21300000, guid: cdf52a599f9a1f2488c7ebe982a0f8ab, type: 3}
+  gripSprite: {fileID: 21300000, guid: cdf52a599f9a1f2488c7ebe982a0f8ab, type: 3}
+  brakeSprite: {fileID: 21300000, guid: 181595ddecdc6b746ad78200164c216c, type: 3}
   tutorialText: {fileID: 990304580}
   leftGrip:
     m_UseReference: 1
@@ -187,7 +187,9 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 187161793506945269, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: -6917043372469391255, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  headTransform: {fileID: 772561364}
+  headTiltThresholdDegrees: 12
   leftHand: {fileID: 5543699517549596668}
   rightHand: {fileID: 5543699517549596669}
   leftHandlebarZone: {fileID: 5543699517549596671}
@@ -195,6 +197,8 @@ MonoBehaviour:
   handlebarRadius: 0.1
   leftHandInZone: 0
   rightHandInZone: 0
+  rotationThresholdDegrees: 25
+  nextSceneName: Rogers
 --- !u!4 &11434572
 Transform:
   m_ObjectHideFlags: 0
@@ -392,6 +396,11 @@ RectTransform:
   m_AnchoredPosition: {x: 21, y: -99}
   m_SizeDelta: {x: 1000, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!4 &772561364 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7683345388041787201, guid: a3875d6259fabc14b8e1bab92849ee66, type: 3}
+  m_PrefabInstance: {fileID: 5543699517549596667}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &990304578
 GameObject:
   m_ObjectHideFlags: 0
@@ -738,6 +747,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 157313272695343746, guid: a3875d6259fabc14b8e1bab92849ee66, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 598864623959200662, guid: a3875d6259fabc14b8e1bab92849ee66, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3654424755122917007, guid: a3875d6259fabc14b8e1bab92849ee66, type: 3}
       propertyPath: m_Name
       value: kawasakiz650s 1 1
@@ -783,6 +800,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5332063642884032014, guid: a3875d6259fabc14b8e1bab92849ee66, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7063003095969578825, guid: a3875d6259fabc14b8e1bab92849ee66, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}

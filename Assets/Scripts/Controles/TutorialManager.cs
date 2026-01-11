@@ -18,7 +18,8 @@ public class TutorialManager : MonoBehaviour
     public Image tutorialImage;
 
     public Sprite gripSprite;
-    public Sprite brakeSprite;
+    public Sprite brakeSprite; 
+    public Sprite acelerarSprite;
 
 
     [Header("UI")]
@@ -40,7 +41,7 @@ public class TutorialManager : MonoBehaviour
     [Tooltip("Collider (trigger) que define la zona del manillar derecho")]
     public Collider rightHandlebarZone;
 
-    [Tooltip("Distancia mxima para considerar la mano dentro de la zona")] 
+    [Tooltip("Distancia maxima para considerar la mano dentro de la zona")] 
     [Range(0.01f, 0.5f)] public float handlebarRadius = 0.1f;
 
     [Header("Estado (solo lectura)")]
@@ -111,11 +112,11 @@ public class TutorialManager : MonoBehaviour
 
             case TutorialStep.Accelerate:
                 tutorialText.text = "Acelera girando la mano derecha";
-                tutorialImage.gameObject.SetActive(false);
+                tutorialImage.sprite = acelerarSprite;
                 break;
 
             case TutorialStep.Done:
-                tutorialText.text = "�Ahora a jugar!";
+                tutorialText.text = "Ahora a jugar!";
                 tutorialImage.gameObject.SetActive(false);
                 break;
         }

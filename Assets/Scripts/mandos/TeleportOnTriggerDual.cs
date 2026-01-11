@@ -17,7 +17,7 @@ public class TeleportOnTriggerDual : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (teleported) return; // Evita múltiples ejecuciones
+        if (teleported) return; // Evita mï¿½ltiples ejecuciones
 
         Debug.Log($"[{gameObject.name}] OnTriggerEnter con: {other.name}");
 

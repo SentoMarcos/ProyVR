@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Rogers.unity
     guid: 134a67756eee3404db52ede396f0e058
+  - enabled: 1
+    path: Assets/Scenes/Controles.unity
+    guid: 72a95aaf66086d34b8834a53dca1f24c
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: dab24c9e4934e524f9a0e64060dcf9ee, type: 2}

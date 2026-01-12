@@ -1,0 +1,415 @@
+fileFormatVersion: 2
+guid: 5075569e5aae9ae4a8d18db3c0791bfc
+ModelImporter:
+  serializedVersion: 24200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford
+    second: {fileID: 2100000, guid: a17245f78b7c2f846a8bdc345e44d275, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Badge_Max_006
+    second: {fileID: 2100000, guid: 3a1d7eb2bb67c244c8362b4d6138150d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_CarPaintNormal_Max1
+    second: {fileID: 2100000, guid: 9296799f6a858c543b581634f5eabfb3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_CarPaint_Max_016
+    second: {fileID: 2100000, guid: 03dd771649ead934889cf1fbac890d20, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_CarPaint_Trim_PianoBlack_Max1
+    second: {fileID: 2100000, guid: 417d4bd5806587e46bfaf28093b8336b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_CarPaint_Trim_PlasticSmoothBlack_Max1
+    second: {fileID: 2100000, guid: d64e9cf3d39c2624ea35e4ce6950610b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Chassis_Max1
+    second: {fileID: 2100000, guid: 80da14e741f35fd4cbaa6b6d5c03c07c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Engine_Max1
+    second: {fileID: 2100000, guid: dd09f8bc6cc5cfb47a8e49e7a8929a91, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_GlassOpaque_Mirror_Max_002
+    second: {fileID: 2100000, guid: 579d32d0f50b9ec4b89b774e085920b4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Glass_WindowFront_Low1
+    second: {fileID: 2100000, guid: 4e84b5aa546878b4b9c3cfcadd216754, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Glass_WindowSurroundFront_Low1
+    second: {fileID: 2100000, guid: 8e9c527b1d895584a893d16f40f45090, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_GrilleA_Max_002
+    second: {fileID: 2100000, guid: 8292053871bdedb48bc159afb31475b9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Interior_Max1
+    second: {fileID: 2100000, guid: 97be71d3f0e7c31499c2fd3d2e5e9ecb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_LightGlass_Red_Low_006
+    second: {fileID: 2100000, guid: dacce2c42fdf0c74b8fc03493bbeb0ff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Light_Max1
+    second: {fileID: 2100000, guid: 29f78eccb6d9433448470c4812ef2131, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Opaque_ChromeSmooth_Max1
+    second: {fileID: 2100000, guid: c7b4f9d9fb118cf41b00dcedea5b92f7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Opaque_NickelRough_Max1
+    second: {fileID: 2100000, guid: ed33db73092331649bfb7449cd75c45f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Opaque_NickelSmooth_Max1
+    second: {fileID: 2100000, guid: f7156b659f5e6f34d932735bb35ca64d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Opaque_PlasticRoughBlack_Max1
+    second: {fileID: 2100000, guid: 38f88ade95de6b04fb3a02410eb52ffe, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Opaque_PlasticSmoothBlack_Max1
+    second: {fileID: 2100000, guid: 698b6523891d35a4b8b4ccbfa4059a36, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_RimBadge_Max1
+    second: {fileID: 2100000, guid: f2d101db994589c4385bd68d4cb4b384, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Rim_Main_Max1
+    second: {fileID: 2100000, guid: 1256fcb62854310448fd50eed0cf0ff1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ford_M_Rim_NoTint_Max1
+    second: {fileID: 2100000, guid: 03a3bbe728ceb314c83231956f6cdf27, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.002
+    second: {fileID: 2100000, guid: 0e4e95e97e303ae4da64838d04bc95c7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.003
+    second: {fileID: 2100000, guid: 3272732a6ea2afc48963a78cc49b01d2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.004
+    second: {fileID: 2100000, guid: 4d9cb8b3ed457134bb2454dbd05a6226, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.006
+    second: {fileID: 2100000, guid: 5cbfe39c599745842b53e4071f355233, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.007
+    second: {fileID: 2100000, guid: 54cda9099817edc45a0fca3e6a7ea996, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.008
+    second: {fileID: 2100000, guid: a89e9d7e54638b0428066d1197105b3a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.009
+    second: {fileID: 2100000, guid: 96575e5455d7d154caf87f094fb71476, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.010
+    second: {fileID: 2100000, guid: 78d86902b595c634499b1e05496fd828, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.011
+    second: {fileID: 2100000, guid: 5d44ea9c7d9c55144bbea24f6f6b26cd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.012
+    second: {fileID: 2100000, guid: 012a41c2f2990904b9f155a74d465b03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.013
+    second: {fileID: 2100000, guid: 9d4ceb87d0aed5f43826273aacd61d3e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.015
+    second: {fileID: 2100000, guid: 2788a1c3703c5154f870067b20d8cb5f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.016
+    second: {fileID: 2100000, guid: e15fcb25e2b9b68408c3a6d16722721b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.017
+    second: {fileID: 2100000, guid: e7b0cc34c02206148bcfcb5c94dcc72f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.018
+    second: {fileID: 2100000, guid: dfe737839d989bb4f9593e47c0cc9feb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.019
+    second: {fileID: 2100000, guid: 34d6b3a638ad6314fbda85f907b2df13, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: calipers_Ford_MustangGTFastbackTNR0_2018_CallipersCalli_49f0492
+    second: {fileID: 2100000, guid: cb16317ad111fbd499dadcd5986741be, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: calipers_Ford_MustangGTFastbackTNR0_2018_CallipersCalli_5ef1412
+    second: {fileID: 2100000, guid: 09952c7d0e48fbe4ba6b70cf851de2e0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: r__TNRRims_93A20NaBrakeDisc_ForgedDrilled_Material1
+    second: {fileID: 2100000, guid: 194ca4a1e8b323740b161c0b0848d37d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: r__TNRRims_93A20NaTireBlur_Material1
+    second: {fileID: 2100000, guid: cdcd5f92f80e9f14494b21f462ca9f00, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Badge_D
+    second: {fileID: 2800000, guid: e53f4d5cb9e91d847abc652ee247c143, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BrakeDisc_ForgedDrilled_DiffuseAOSO
+    second: {fileID: 2800000, guid: 77ee3535a73c52d4cb14aed841c8ff10, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: CalliperBadgeA_Diffuse
+    second: {fileID: 2800000, guid: c82e6a6a8f6126f44956e15507ff75ff, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Car_Ford_MustangGT_2015_Badge_N
+    second: {fileID: 2800000, guid: d1bfe30c434a4b04abb7684200bc599d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Car_Ford_MustangGT_2015_Engine_D
+    second: {fileID: 2800000, guid: 65b50730db964f5469c5e7b9942a912f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Car_Ford_MustangGT_2015_Engine_NO
+    second: {fileID: 2800000, guid: 84bec267d2a84394688815f7689d3fd0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Car_Ford_MustangGT_2015_GrilleA_NO
+    second: {fileID: 2800000, guid: 4414ff21496b78f499b49dc0932e3ae8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Car_Ford_MustangGT_2015_Interior_NO
+    second: {fileID: 2800000, guid: 3c29716e7cc140145a9cbed919d01640, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Car_Ford_MustangGT_2015_Light_SetA_D
+    second: {fileID: 2800000, guid: 03224b5784bc11848b73b50eedb6f301, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Car_Ford_MustangGT_2015_Light_SetA_IN_ND
+    second: {fileID: 2800000, guid: cb85fa98df55c4447a0daa87f22252c4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Car_Ford_MustangGT_2015_RimBadge_D
+    second: {fileID: 2800000, guid: 2174b2d739f132643b8ad9f337242f37, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Car_Ford_MustangGT_2015_RimBadge_N
+    second: {fileID: 2800000, guid: 60efc2f39a6f8674d9854f1bc692242a, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Car_Ford_MustangGT_2015_Rim_N
+    second: {fileID: 2800000, guid: 6dd04dd09b4c4714c9f8ee1a01cf5dd4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Global_Texture_Calliper_Normal
+    second: {fileID: 2800000, guid: 5d41d161e275ae54ea44b85239ba5441, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: GrilleA
+    second: {fileID: 2800000, guid: 43bfdf78708cc1147aa8cb99dbaa4212, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Interior_D
+    second: {fileID: 2800000, guid: 814dd524f1622ce4b9f6c581f186a626, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: TOYO_ProxesR888_A_DiffuseAOSO
+    second: {fileID: 2800000, guid: 90f2c2e2f1bfc8e42a136bbdd83d3f98, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: TOYO_ProxesR888_A_Normal
+    second: {fileID: 2800000, guid: e8920dc0b062a3d4da0a8031d9930df6, type: 3}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

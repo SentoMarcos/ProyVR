@@ -21,6 +21,8 @@ public class TutorialManager : MonoBehaviour
 
     public Sprite gripSprite;
     public Sprite brakeSprite;
+    public Sprite acelerarSprite;
+    public Sprite girarSprite;
 
 
     [Header("UI")]
@@ -161,13 +163,12 @@ public class TutorialManager : MonoBehaviour
 
             case TutorialStep.Accelerate:
                 tutorialText.text = "Acelera girando la mano derecha";
-                tutorialImage.gameObject.SetActive(false);
+                tutorialImage.sprite = acelerarSprite;
                 break;
 
             case TutorialStep.TiltHead:
                 tutorialText.text = "Inclina la cabeza para girar";
-                tutorialImage.gameObject.SetActive(true);
-                tutorialImage.sprite = null; // espacio para imagen futura
+                tutorialImage.sprite = girarSprite; 
                 break;
 
             case TutorialStep.Done:

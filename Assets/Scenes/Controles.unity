@@ -151,6 +151,8 @@ MonoBehaviour:
   tutorialImage: {fileID: 1910911003}
   gripSprite: {fileID: 21300000, guid: cdf52a599f9a1f2488c7ebe982a0f8ab, type: 3}
   brakeSprite: {fileID: 21300000, guid: 181595ddecdc6b746ad78200164c216c, type: 3}
+  acelerarSprite: {fileID: 21300000, guid: f59ddf9b8de225c4097bb3bc6f87fcba, type: 3}
+  girarSprite: {fileID: 21300000, guid: 4ffda5ffc0e4e6444ab9b7512524de41, type: 3}
   tutorialText: {fileID: 990304580}
   leftGrip:
     m_UseReference: 1
@@ -188,8 +190,8 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: -6917043372469391255, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  headTransform: {fileID: 772561364}
-  headTiltThresholdDegrees: 12
+  headTransform: {fileID: 1138596399}
+  headTiltThresholdDegrees: 5.6
   leftHand: {fileID: 5543699517549596668}
   rightHand: {fileID: 5543699517549596669}
   leftHandlebarZone: {fileID: 5543699517549596671}
@@ -198,7 +200,7 @@ MonoBehaviour:
   leftHandInZone: 0
   rightHandInZone: 0
   rotationThresholdDegrees: 25
-  nextSceneName: Rogers
+  nextSceneName: Menu 1
 --- !u!4 &11434572
 Transform:
   m_ObjectHideFlags: 0
@@ -396,11 +398,6 @@ RectTransform:
   m_AnchoredPosition: {x: 21, y: -99}
   m_SizeDelta: {x: 1000, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!4 &772561364 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7683345388041787201, guid: a3875d6259fabc14b8e1bab92849ee66, type: 3}
-  m_PrefabInstance: {fileID: 5543699517549596667}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &990304578
 GameObject:
   m_ObjectHideFlags: 0
@@ -537,6 +534,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 990304578}
   m_CullTransparentMesh: 1
+--- !u!4 &1138596399 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4177447772855411482, guid: a3875d6259fabc14b8e1bab92849ee66, type: 3}
+  m_PrefabInstance: {fileID: 5543699517549596667}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1910911001
 GameObject:
   m_ObjectHideFlags: 0

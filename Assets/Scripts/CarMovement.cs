@@ -63,7 +63,7 @@ public class CarMovement : MonoBehaviour
     {
         if (rb.position.y < -5f) // ejemplo: fuera del mundo
         {
-        Destroy(gameObject);
+            Destroy(gameObject);
         }
     }
 

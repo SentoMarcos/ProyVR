@@ -15582,6 +15582,7 @@ GameObject:
   - component: {fileID: 2693887991018119166}
   - component: {fileID: 3348740623771374851}
   - component: {fileID: 7172204509955836062}
+  - component: {fileID: 8077516351033102686}
   m_Layer: 0
   m_Name: ford 2
   m_TagString: Untagged
@@ -15716,7 +15717,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3815264984182584271}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 3
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -15730,10 +15731,10 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 2
 --- !u!114 &7172204509955836062
 MonoBehaviour:
@@ -15751,6 +15752,27 @@ MonoBehaviour:
   direction: {x: 0, y: 0, z: 1}
   stopThreshold: 0.02
   stopTime: 0.3
+--- !u!65 &8077516351033102686
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3815264984182584271}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2, y: 2, z: 4.7}
+  m_Center: {x: 0, y: 0.95, z: 0}
 --- !u!1 &3838312871581571906
 GameObject:
   m_ObjectHideFlags: 0

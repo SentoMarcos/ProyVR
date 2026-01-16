@@ -36,60 +36,49 @@ public class StartButtonHandler : MonoBehaviour, IPointerClickHandler
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        float targetY = 0.72f;           // Altura deseada del plane
-        float planeZ = 0f;               // Posición Z del plane
-        float distanceForward = 0.5f;    // Espacio entre plane y primer segmento
-        float planeLength = groundPlane.localScale.z;
-
-        // 1️⃣ Ajuste vertical: mover toda la escena para que el plane quede en targetY
-        float yOffset = targetY - groundPlane.position.y;
-
-        // 🔹 Subir la escena antigua 1 unidad en Y
+        // 1️⃣ Subir escena antigua 1 unidad
         foreach (var root in SceneManager.GetActiveScene().GetRootGameObjects())
         {
-            root.transform.position += new Vector3(0f, 1f, 0f); // sube la antigua
+            root.transform.position += new Vector3(0f, 1f, 0f);
         }
 
         // 2️⃣ Desaparecer objeto específico de la escena antigua
-        GameObject oldObj = GameObject.Find("Barreras");
+        GameObject oldObj = GameObject.Find("OldObject");
         if (oldObj != null)
             Destroy(oldObj); // o oldObj.SetActive(false);
 
-        // 🔹 Ajuste vertical del plane en la nueva escena
+        // 3️⃣ Ajustar escena nueva como antes
+        float targetY = 0.72f;
+        float planeZ = 0f;
+        float distanceForward = 0.5f;
+        float planeLength = groundPlane.localScale.z;
+
+        float yOffset = targetY - groundPlane.position.y;
+
         foreach (var root in scene.GetRootGameObjects())
         {
             root.transform.position += new Vector3(0f, yOffset, 0f);
         }
 
-
-        // 2️⃣ Encontrar la Z mínima de los segmentos de carretera
+        // 4️⃣ Ajustar Z de la carretera
         float minRoadZ = float.MaxValue;
         foreach (var root in scene.GetRootGameObjects())
         {
-            if (root.scene == scene)
+            foreach (Transform child in root.transform)
             {
-                foreach (Transform child in root.transform)
+                if (child != null && child.CompareTag("Road")) // si quieres filtrar solo carreteras
                 {
-                    if (child != null)
-                    {
-                        float z = child.position.z;
-                        if (z < minRoadZ) minRoadZ = z;
-                    }
+                    if (child.position.z < minRoadZ) minRoadZ = child.position.z;
                 }
             }
         }
 
-        float segmentLength = 20f; // o la misma variable que usas en ProceduralGenerator
+        float segmentLength = 20f;
         float roadOffsetZ = planeZ + (planeLength / 2f) + distanceForward - minRoadZ - segmentLength;
 
-
-        // 4️⃣ Aplicar el offset **solo a los segmentos raíz**, no a cada hijo
         foreach (var root in scene.GetRootGameObjects())
         {
-            if (root.scene == scene)
-            {
-                root.transform.position += new Vector3(0f, 0f, roadOffsetZ);
-            }
+            root.transform.position += new Vector3(0f, 0f, roadOffsetZ);
         }
     }
 

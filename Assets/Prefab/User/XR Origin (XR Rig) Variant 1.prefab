@@ -1049,6 +1049,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FreezeOnTrigger
   freezeZoneTag: LeftFreezeZone
+  tutorialManager: {fileID: 0}
+  isLeftHand: 0
 --- !u!1 &4037043329847748751
 GameObject:
   m_ObjectHideFlags: 0
@@ -2086,6 +2088,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FreezeOnTrigger
   freezeZoneTag: RightFreezeZone
+  tutorialManager: {fileID: 0}
+  isLeftHand: 0
 --- !u!1 &8455883727081986327
 GameObject:
   m_ObjectHideFlags: 0
@@ -2419,6 +2423,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FreezeOnTrigger
   freezeZoneTag: RightFreezeZone
+  tutorialManager: {fileID: 0}
+  isLeftHand: 0
 --- !u!1 &1602163016188167522 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1767192433, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}

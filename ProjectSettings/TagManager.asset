@@ -6,6 +6,7 @@ TagManager:
   tags:
   - LeftFreezeZone
   - RightFreezeZone
+  - Road
   layers:
   - Default
   - TransparentFX

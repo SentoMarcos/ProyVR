@@ -329,7 +329,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2693887991018119166, guid: eb2a2954c4ec79a42a25d4e767f87f61, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -98
       objectReference: {fileID: 0}
     - target: {fileID: 2693887991018119166, guid: eb2a2954c4ec79a42a25d4e767f87f61, type: 3}
       propertyPath: m_LocalPosition.y
@@ -337,7 +337,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2693887991018119166, guid: eb2a2954c4ec79a42a25d4e767f87f61, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 84
       objectReference: {fileID: 0}
     - target: {fileID: 2693887991018119166, guid: eb2a2954c4ec79a42a25d4e767f87f61, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1334,7 +1334,7 @@ GameObject:
   - component: {fileID: 919132148080663689}
   m_Layer: 0
   m_Name: _carretera_4
-  m_TagString: Untagged
+  m_TagString: Road
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1372,7 +1372,7 @@ GameObject:
   - component: {fileID: 543450652631169817}
   m_Layer: 0
   m_Name: _carretera_2
-  m_TagString: Untagged
+  m_TagString: Road
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1388,7 +1388,7 @@ GameObject:
   - component: {fileID: 543450652433854426}
   m_Layer: 0
   m_Name: _carretera_1
-  m_TagString: Untagged
+  m_TagString: Road
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1404,7 +1404,7 @@ GameObject:
   - component: {fileID: 543450653111306917}
   m_Layer: 0
   m_Name: _carretera_5
-  m_TagString: Untagged
+  m_TagString: Road
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1420,7 +1420,7 @@ GameObject:
   - component: {fileID: 543450653509332614}
   m_Layer: 0
   m_Name: _carretera_3
-  m_TagString: Untagged
+  m_TagString: Road
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1436,7 +1436,7 @@ GameObject:
   - component: {fileID: 543450653535453573}
   m_Layer: 0
   m_Name: _carretera_7
-  m_TagString: Untagged
+  m_TagString: Road
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1452,7 +1452,7 @@ GameObject:
   - component: {fileID: 543450653193714286}
   m_Layer: 0
   m_Name: _carretera_6
-  m_TagString: Untagged
+  m_TagString: Road
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

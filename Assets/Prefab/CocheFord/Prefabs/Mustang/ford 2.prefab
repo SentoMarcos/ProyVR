@@ -15580,8 +15580,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2693887991018119166}
-  - component: {fileID: 3348740623771374851}
   - component: {fileID: 7172204509955836062}
+  - component: {fileID: 3348740623771374851}
   - component: {fileID: 8077516351033102686}
   m_Layer: 0
   m_Name: ford 2
@@ -15589,7 +15589,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2693887991018119166
 Transform:
   m_ObjectHideFlags: 0
@@ -15599,7 +15599,7 @@ Transform:
   m_GameObject: {fileID: 3815264984182584271}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -98.84132, y: 0, z: 92.11339}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15709,6 +15709,22 @@ Transform:
   - {fileID: 6845571578471171937}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7172204509955836062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3815264984182584271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e1dd507079adf541a6deffd087cc7be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarMovement
+  speed: 8
+  direction: {x: 0, y: 0, z: 1}
+  stopThreshold: 0.02
+  stopTime: 0.3
 --- !u!54 &3348740623771374851
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -15736,22 +15752,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 80
   m_CollisionDetection: 2
---- !u!114 &7172204509955836062
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3815264984182584271}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e1dd507079adf541a6deffd087cc7be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CarMovement
-  speed: 8
-  direction: {x: 0, y: 0, z: 1}
-  stopThreshold: 0.02
-  stopTime: 0.3
 --- !u!65 &8077516351033102686
 BoxCollider:
   m_ObjectHideFlags: 0

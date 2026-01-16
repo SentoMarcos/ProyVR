@@ -265,6 +265,7 @@ public class ProceduralGenerator : MonoBehaviour
             Debug.Log("Coche colocado en: " + carPos + " en carretera: " + chosenRoad.name);
 
             GameObject instance = Instantiate(prefabCoche, chosenRoad.transform);
+            instance.SetActive(true);
             instance.transform.localPosition = new Vector3(0, 0.5f, 0); // relativa a la carretera
             instance.transform.localRotation = Quaternion.identity;
             //instance.transform.localScale = new Vector3(100f,100f,100f);

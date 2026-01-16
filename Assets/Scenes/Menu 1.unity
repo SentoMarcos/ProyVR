@@ -1978,7 +1978,7 @@ MonoBehaviour:
   - {fileID: 1512989890}
   - {fileID: 439256331}
   - {fileID: 439256331}
-  - {fileID: 966607055}
+  - {fileID: 0}
   hideWorldOnPlay: 1
 --- !u!114 &283519192
 MonoBehaviour:
@@ -6215,11 +6215,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963306389}
   m_CullTransparentMesh: 1
---- !u!1 &966607055 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5128313886554824504, guid: 539d4d270b7b08246a82be2c2e39b79b, type: 3}
-  m_PrefabInstance: {fileID: 1174928036}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &969666148
 GameObject:
   m_ObjectHideFlags: 0
@@ -12632,7 +12627,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicReactiveLights
   audioSource: {fileID: 148728809}
-  sensitivity: 12
+  sensitivity: 20
   threshold: 15
   bassSamples: 16
   baseColor: {r: 0, g: 1, b: 0.18008995, a: 1}
@@ -16856,7 +16851,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicReactiveLights
   audioSource: {fileID: 148728809}
-  sensitivity: 12
+  sensitivity: 20
   threshold: 15
   bassSamples: 16
   baseColor: {r: 0, g: 1, b: 0.18039216, a: 1}

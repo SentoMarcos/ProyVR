@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
@@ -27,10 +28,10 @@ public class StartButtonHandler : MonoBehaviour, IPointerClickHandler
             Debug.Log("UIContainer ES NULL");
 
         // Desactivar camión completo
-        if (truckRootToDisable != null)
+        /*if (truckRootToDisable != null)
             truckRootToDisable.SetActive(false);
         else
-            Debug.Log("truckRootToDisable ES NULL");
+            Debug.Log("truckRootToDisable ES NULL");*/
 
         // Activar objetos solicitados
         if (objectsToActivate != null && objectsToActivate.Length > 0)
@@ -53,8 +54,8 @@ public class StartButtonHandler : MonoBehaviour, IPointerClickHandler
             {
                 if (rb != null)
                 {
-                    rb.isKinematic = false;
-                    rb.useGravity = true;
+                    rb.isKinematic = true; 
+                    rb.useGravity = false;
                 }
             }
         }
@@ -120,6 +121,20 @@ public class StartButtonHandler : MonoBehaviour, IPointerClickHandler
         {
             root.transform.position += new Vector3(0f, 0f, roadOffsetZ);
         }
+        StartCoroutine(ReenablePhysicsNextFrame());
+
     }
+
+    private IEnumerator ReenablePhysicsNextFrame()
+    {
+        yield return null; // esperar 1 frame después de mover la escena
+
+        foreach (var rb in rigidbodiesToEnableGravity)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = true;
+        }
+    }
+
 
 }

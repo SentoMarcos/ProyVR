@@ -247,30 +247,26 @@ public class ProceduralGenerator : MonoBehaviour
 
         for (int i = 0; i < 3; i++)
         {
-            GameObject prefab = roadsToPlace[i];
             GameObject instance = instantiatedRoads[i];
+            GameObject prefab = roadsToPlace[i];
 
             if (prefab != null && System.Array.Exists(carreterasSeguras, safe => safe == prefab))
                 safeRoadsInSegment.Add(instance);
         }
 
-
-
-        // Si hay exactamente 2 carreteras seguras → colocar coche en UNA sola
-        if (safeRoadsInSegment.Count == 2)
+        // Si hay al menos 1 carretera segura → colocar coche en UNA de ellas
+        if (safeRoadsInSegment.Count > 0)
         {
             GameObject chosenRoad = safeRoadsInSegment[Random.Range(0, safeRoadsInSegment.Count)];
 
-            Vector3 carPos = chosenRoad.transform.position + new Vector3(0, 0.66f, 0);
-            Debug.Log("Coche colocado en: " + carPos + " en carretera: " + chosenRoad.name);
-
             GameObject instance = Instantiate(prefabCoche, chosenRoad.transform);
             instance.SetActive(true);
-            instance.transform.localPosition = new Vector3(0, 0.5f, 0); // relativa a la carretera
+            instance.transform.localPosition = new Vector3(0, 2f, 0); // relativa a la carretera
             instance.transform.localRotation = Quaternion.identity;
-            //instance.transform.localScale = new Vector3(100f,100f,100f);
 
+            Debug.Log("Coche colocado en: " + chosenRoad.name + " en posición: " + instance.transform.position);
         }
+
 
 
     }

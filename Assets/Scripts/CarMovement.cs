@@ -20,8 +20,8 @@ public class CarMovement : MonoBehaviour
         rb.useGravity = true;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        rb.constraints = RigidbodyConstraints.FreezeRotationX
-                       | RigidbodyConstraints.FreezeRotationZ;
+        rb.constraints = //RigidbodyConstraints.FreezeRotationX
+                       RigidbodyConstraints.FreezeRotationZ;
 
         lastPosition = rb.position;
     }
@@ -69,18 +69,20 @@ public class CarMovement : MonoBehaviour
 
     void UpdateRotationOnSlope()
     {
-        Ray ray = new Ray(rb.position + Vector3.up * 0.5f, Vector3.down);
+        Ray ray = new Ray(rb.position + Vector3.up, Vector3.down);
+
         if (Physics.Raycast(ray, out RaycastHit hit, 2f))
         {
-            Vector3 normal = hit.normal;
-            Quaternion slopeRotation = Quaternion.FromToRotation(Vector3.up, normal);
-            Vector3 euler = slopeRotation.eulerAngles;
-            euler.y = 0f; // siempre mirando hacia adelante
-            rb.rotation = Quaternion.Euler(euler);
-        }
-        else
-        {
-            rb.rotation = Quaternion.Euler(0f, 0f, 0f);
+            Vector3 groundNormal = hit.normal;
+
+            // Mantener dirección forward del coche
+            Vector3 forward = Vector3.ProjectOnPlane(transform.forward, groundNormal).normalized;
+
+            Quaternion targetRotation = Quaternion.LookRotation(forward, groundNormal);
+
+            rb.MoveRotation(
+                Quaternion.Slerp(rb.rotation, targetRotation, 10f * Time.fixedDeltaTime)
+            );
         }
     }
 
